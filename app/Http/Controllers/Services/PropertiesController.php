@@ -30,8 +30,12 @@ class PropertiesController extends Controller
         $out = Properties::select(
             'properties.*',
             'locations.location',
+            'districts.district',
+            'provinces.province',
         )
             ->join('locations', 'properties.location_id', 'locations.id')
+            ->join('districts', 'locations.district_id', 'districts.id')
+            ->join('provinces', 'districts.province_id', 'provinces.id')
             ->when(!empty($keyword), function ($query) use ($keyword) {
                 return $query->where('properties.name', 'like', '%' . $keyword . '%')
                     ->orWhere('properties.phone_1', 'like', '%' . $keyword . '%')
