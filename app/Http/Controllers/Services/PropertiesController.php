@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Services;
 
 use App\Http\Controllers\Controller;
 use App\Models\Properties;
-use http\Client\Curl\User;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Helpers\CommonHelper;
 use App\Helpers\DBHelper;
