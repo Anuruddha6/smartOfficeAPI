@@ -26,7 +26,7 @@ class PropertiesController extends Controller
         $isDeleted = !empty($request->is_deleted) ? $request->is_deleted : 0;
         $isVerified = !empty($request->is_verified) ? $request->is_verified : 1;
 
-        $out = User::select(
+        $out = Properties::select(
             'properties.*',
             'locations.location',
         )
