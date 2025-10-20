@@ -75,12 +75,12 @@ class UsersController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $isNewRecord = 0;
+        $isNewUser = 0;
         if (!empty($request->user_id)){
             $user = User::where('uuid', $request->user_id)->first();
         }else{
 
-            $isNewRecord = 1;
+            $isNewUser = 1;
 
             $user = new User();
             $user->password = Hash::make($request->password);
@@ -96,7 +96,7 @@ class UsersController extends Controller
         $user->save();
 
         //Set Public Key
-        if (!empty($isNewRecord) && $user){
+        if (!empty($isNewUser) && $user){
             $keyUser = User::find($user->id);
             $key = $keyUser->createToken('public' .'-'. $user->id)->plainTextToken;
             $publicKey = explode('|', $key)[1];

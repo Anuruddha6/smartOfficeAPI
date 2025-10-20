@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Services;
 
 use App\Http\Controllers\Controller;
 use App\Models\Properties;
+use http\Client\Curl\User;
 use Illuminate\Http\Request;
 use App\Helpers\CommonHelper;
 use App\Helpers\DBHelper;
@@ -67,6 +68,7 @@ class PropertiesController extends Controller
         $out = [];
 
         APIValidator::validate($request, [
+            'user_id' => ['required'],
             'location_id' => ['required'],
             'name' => ['required', 'max:500'],
         ]);
@@ -76,7 +78,10 @@ class PropertiesController extends Controller
             $save = Properties::where('uuid', $request->property_id)->first();
         }else{
 
+            $u = User::where('uuid', $request->user_id)->first();
+
             $save = new Properties();
+            $save->user_id = $u->id;
             $save->is_verified = 0;
             $save->is_deleted = 0;
             $save->status = 1;
