@@ -56,8 +56,12 @@ class PropertiesController extends Controller
             }, function ($query) use ($request){
                 return $query->where('properties.is_deleted', 0);
             })
+            ->when(!empty($isVerified), function ($query) use ($isVerified) {
+                return $query->where('properties.is_verified', 1);
+            }, function ($query) use ($request){
+                return $query->where('properties.is_verified', 0);
+            })
             ->where('properties.status', $status)
-            ->where('properties.is_verified', $isVerified)
             ->orderBy('id', 'ASC')
             ->paginate($itemsPerPage, ['*'], 'page', $currentPage);
 

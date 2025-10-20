@@ -18,7 +18,7 @@ Route::post('/Users/loginUser', [UsersController::class, 'loginUser'])->name('lo
 // Auth Routes
 Route::middleware('auth:sanctum')->group(function () {
 
-    // U
+    // P
     Route::prefix('Properties')->group(function (){
         Route::post('/getProperties', [PropertiesController::class, 'getProperties'])->name('Properties.getProperties');
         Route::post('/getProperty', [PropertiesController::class, 'getProperty'])->name('Properties.getProperty');
