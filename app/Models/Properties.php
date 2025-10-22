@@ -12,4 +12,9 @@ class Properties extends Model
     const UPDATED_AT = 'updated_at';
 
     protected $table = 'properties';
+
+    public function property_rooms()
+    {
+        return $this->hasMany(PropertyRooms::class, 'property_id', 'id');
+    }
 }

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 //P
 use App\Http\Controllers\Services\PropertiesController;
+use App\Http\Controllers\Services\PropertyRoomsController;
 
 //U
 use App\Http\Controllers\Services\UsersController;
@@ -21,8 +22,15 @@ Route::middleware('auth:sanctum')->group(function () {
     // P
     Route::prefix('Properties')->group(function (){
         Route::post('/getProperties', [PropertiesController::class, 'getProperties'])->name('Properties.getProperties');
-        // Route::post('/getProperty', [PropertiesController::class, 'getProperty'])->name('Properties.getProperty');
+        Route::post('/getProperty', [PropertiesController::class, 'getProperty'])->name('Properties.getProperty');
         Route::post('/setProperty', [PropertiesController::class, 'setProperty'])->name('Properties.setProperty');
+    });
+
+
+    Route::prefix('PropertyRooms')->group(function (){
+        Route::post('/getPropertyRooms', [PropertyRoomsController::class, 'getPropertyRooms'])->name('Properties.getPropertyRooms');
+        Route::post('/getPropertyRoom', [PropertyRoomsController::class, 'getPropertyRoom'])->name('Properties.getPropertyRoom');
+        Route::post('/setPropertyRoom', [PropertyRoomsController::class, 'setPropertyRoom'])->name('Properties.setPropertyRoom');
     });
 
     // U

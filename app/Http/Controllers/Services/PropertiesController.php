@@ -70,6 +70,59 @@ class PropertiesController extends Controller
 
     public function getProperty(Request $request){
 
+        $keyword = !empty($request->keyword) ? $request->keyword : '';
+        $propertyId = !empty($request->property_id) ? $request->property_id : 0;
+        $locationId = !empty($request->location_id) ? $request->location_id : 0;
+        $status = !empty($request->status) ? $request->status : 1;
+        $isDeleted = !empty($request->is_deleted) ? $request->is_deleted : 0;
+        $isVerified = !empty($request->is_verified) ? $request->is_verified : 1;
+
+        $out = Properties::select(
+            'properties.*',
+            'locations.location',
+            'districts.district',
+            'provinces.province',
+        )
+            ->join('locations', 'properties.location_id', 'locations.id')
+            ->join('districts', 'locations.district_id', 'districts.id')
+            ->join('provinces', 'districts.province_id', 'provinces.id')
+            ->with([
+                'property_rooms' => function ($query) {
+                    $query->select(
+                        'property_rooms.*',
+                    )->where('property_rooms.status', 1);
+                }
+            ])
+            ->when(!empty($keyword), function ($query) use ($keyword) {
+                return $query->where('properties.name', 'like', '%' . $keyword . '%')
+                    ->orWhere('properties.phone_1', 'like', '%' . $keyword . '%')
+                    ->orWhere('properties.phone_2', 'like', '%' . $keyword . '%')
+                    ->orWhere('properties.street_address', 'like', '%' . $keyword . '%')
+                    ->orWhere('properties.address_2', 'like', '%' . $keyword . '%')
+                    ->orWhere('properties.town', 'like', '%' . $keyword . '%')
+                    ->orWhere('properties.city', 'like', '%' . $keyword . '%');
+            })
+            ->when(!empty($propertyId), function ($query) use ($propertyId) {
+                return $query->where('properties.uuid', $propertyId);
+            })
+            ->when(!empty($locationId), function ($query) use ($locationId) {
+                return $query->where('properties.location_id', $locationId);
+            })
+            ->when(!empty($isDeleted), function ($query) use ($isDeleted) {
+                return $query->where('properties.is_deleted', 1);
+            }, function ($query) use ($request){
+                return $query->where('properties.is_deleted', 0);
+            })
+            ->when(!empty($isVerified), function ($query) use ($isVerified) {
+                return $query->where('properties.is_verified', 1);
+            }, function ($query) use ($request){
+                return $query->where('properties.is_verified', 0);
+            })
+            ->where('properties.status', $status)
+            ->first();
+
+        return response()->json($out);
+
     }
 
     public function setProperty(Request $request){
