@@ -21,7 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // P
     Route::prefix('Properties')->group(function (){
         Route::post('/getProperties', [PropertiesController::class, 'getProperties'])->name('Properties.getProperties');
-        Route::post('/getProperty', [PropertiesController::class, 'getProperty'])->name('Properties.getProperty');
+        // Route::post('/getProperty', [PropertiesController::class, 'getProperty'])->name('Properties.getProperty');
         Route::post('/setProperty', [PropertiesController::class, 'setProperty'])->name('Properties.setProperty');
     });
 
