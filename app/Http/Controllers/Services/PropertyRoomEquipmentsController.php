@@ -20,7 +20,7 @@ class PropertyRoomEquipmentsController extends Controller
         $currentPage = !empty($request->current_page) ? $request->current_page : 0;
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
-        $PropertyRoomEquipmentId = !empty($request->property_room_equipment_id) ? $request->property_room_equipment_id : 0;
+        $propertyRoomEquipmentId = !empty($request->property_room_equipment_id) ? $request->property_room_equipment_id : 0;
         $propertyRoomId = !empty($request->property_room_id) ? $request->property_room_id : 0;
         $status = !empty($request->status) ? $request->status : 1;
         $isDeleted = !empty($request->is_deleted) ? $request->is_deleted : 0;
@@ -37,8 +37,8 @@ class PropertyRoomEquipmentsController extends Controller
                     ->orWhere('property_room_equipments.price', 'like', '%' . $keyword . '%')
                     ->orWhere('property_room_equipments.description', 'like', '%' . $keyword . '%');
             })
-            ->when(!empty($PropertyRoomEquipmentId), function ($query) use ($PropertyRoomEquipmentId) {
-                return $query->where('property_room_equipments.uuid', $PropertyRoomEquipmentId);
+            ->when(!empty($propertyRoomEquipmentId), function ($query) use ($propertyRoomEquipmentId) {
+                return $query->where('property_room_equipments.uuid', $propertyRoomEquipmentId);
             })
             ->when(!empty($propertyRoomId), function ($query) use ($propertyRoomId) {
                 return $query->where('property_rooms.uuid', $propertyRoomId);
@@ -55,7 +55,7 @@ class PropertyRoomEquipmentsController extends Controller
     public function getPropertyRoomEquipment(Request $request){
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
-        $PropertyRoomEquipmentId = !empty($request->property_room_equipment_id) ? $request->property_room_equipment_id : 0;
+        $propertyRoomEquipmentId = !empty($request->property_room_equipment_id) ? $request->property_room_equipment_id : 0;
         $propertyRoomId = !empty($request->property_room_id) ? $request->property_room_id : 0;
         $status = !empty($request->status) ? $request->status : 1;
         $isDeleted = !empty($request->is_deleted) ? $request->is_deleted : 0;
@@ -72,8 +72,8 @@ class PropertyRoomEquipmentsController extends Controller
                     ->orWhere('property_room_equipments.price', 'like', '%' . $keyword . '%')
                     ->orWhere('property_room_equipments.description', 'like', '%' . $keyword . '%');
             })
-            ->when(!empty($PropertyRoomEquipmentId), function ($query) use ($PropertyRoomEquipmentId) {
-                return $query->where('property_room_equipments.uuid', $PropertyRoomEquipmentId);
+            ->when(!empty($propertyRoomEquipmentId), function ($query) use ($propertyRoomEquipmentId) {
+                return $query->where('property_room_equipments.uuid', $propertyRoomEquipmentId);
             })
             ->when(!empty($propertyRoomId), function ($query) use ($propertyRoomId) {
                 return $query->where('property_rooms.uuid', $propertyRoomId);

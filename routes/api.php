@@ -3,13 +3,20 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+//L
+use App\Http\Controllers\Services\LocationsController;
+
 //P
+use App\Http\Controllers\Services\PaymentMethodsController;
 use App\Http\Controllers\Services\PropertiesController;
 use App\Http\Controllers\Services\PropertyRoomsController;
 use App\Http\Controllers\Services\PropertyRoomEquipmentsController;
+use App\Http\Controllers\Services\PropertyRoomFeaturesController;
+
 
 //U
 use App\Http\Controllers\Services\UsersController;
+use App\Http\Controllers\Services\UserRolesController;
 
 
 
@@ -19,6 +26,13 @@ Route::post('/Users/loginUser', [UsersController::class, 'loginUser'])->name('lo
 
 // Auth Routes
 Route::middleware('auth:sanctum')->group(function () {
+
+    // L
+    Route::prefix('Locations')->group(function (){
+        Route::post('/getLocations', [LocationsController::class, 'getLocations'])->name('Locations.getLocations');
+        Route::post('/getLocation', [LocationsController::class, 'getLocation'])->name('Locations.getLocation');
+        Route::post('/setLocation', [LocationsController::class, 'setLocation'])->name('Locations.setLocation');
+    });
 
     // P
     Route::prefix('Properties')->group(function (){
@@ -40,6 +54,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/setPropertyRoomEquipment', [PropertyRoomEquipmentsController::class, 'setPropertyRoomEquipment'])->name('propertyRoomEquipments.setPropertyRoomEquipment');
     });
 
+    Route::prefix('PropertyRoomFeatures')->group(function (){
+        Route::post('/getPropertyRoomFeatures', [PropertyRoomFeaturesController::class, 'getPropertyRoomFeatures'])->name('propertyRoomFeatures.getPropertyRoomFeatures');
+        Route::post('/getPropertyRoomFeature', [PropertyRoomFeaturesController::class, 'getPropertyRoomFeature'])->name('propertyRoomFeatures.getPropertyRoomFeature');
+        Route::post('/setPropertyRoomFeature', [PropertyRoomFeaturesController::class, 'setPropertyRoomFeature'])->name('propertyRoomFeatures.setPropertyRoomFeature');
+    });
+
+    Route::prefix('PaymentMethods')->group(function (){
+        Route::post('/getPaymentMethods', [PaymentMethodsController::class, 'getPaymentMethods'])->name('paymentMethods.getPaymentMethods');
+        Route::post('/getPaymentMethod', [PaymentMethodsController::class, 'getPaymentMethod'])->name('paymentMethods.getPaymentMethod');
+        Route::post('/setPaymentMethod', [PaymentMethodsController::class, 'setPaymentMethod'])->name('paymentMethods.setPaymentMethod');
+    });
+
     // U
     Route::prefix('Users')->group(function (){
         Route::post('/getUsers', [UsersController::class, 'getUsers'])->name('Users.getUsers');
@@ -49,5 +75,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logoutUser', [UsersController::class, 'logoutUser'])->name('Users.logoutUser');*/
     });
 
+    Route::prefix('UserRoles')->group(function (){
+        Route::post('/getUserRoles', [UserRolesController::class, 'getUserRoles'])->name('userRoles.getUserRoles');
+        Route::post('/getUserRole', [UserRolesController::class, 'getUserRole'])->name('userRoles.getUserRole');
+        Route::post('/setUserRole', [UserRolesController::class, 'setUserRole'])->name('userRoles.setUserRole');
+    });
 
 });

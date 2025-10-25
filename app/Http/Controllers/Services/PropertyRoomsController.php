@@ -36,6 +36,11 @@ class PropertyRoomsController extends Controller
                     $query->select(
                         'property_room_equipments.*',
                     )->where('property_room_equipments.status', 1);
+                },
+                'property_room_features' => function ($query) {
+                    $query->select(
+                        'property_room_features.*',
+                    )->where('property_room_features.status', 1);
                 }
             ])
             ->when(!empty($keyword), function ($query) use ($keyword) {
@@ -82,6 +87,11 @@ class PropertyRoomsController extends Controller
                     $query->select(
                         'property_room_equipments.*',
                     )->where('property_room_equipments.status', 1);
+                },
+                'property_room_features' => function ($query) {
+                    $query->select(
+                        'property_room_features.*',
+                    )->where('property_room_features.status', 1);
                 }
             ])
             ->when(!empty($keyword), function ($query) use ($keyword) {

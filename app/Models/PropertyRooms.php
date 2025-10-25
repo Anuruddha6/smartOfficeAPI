@@ -17,4 +17,9 @@ class PropertyRooms extends Model
     {
         return $this->hasMany(PropertyRoomEquipments::class, 'property_room_id', 'id');
     }
+
+    public function property_room_features()
+    {
+        return $this->hasMany(PropertyRoomFeatures::class, 'property_room_id', 'id');
+    }
 }
