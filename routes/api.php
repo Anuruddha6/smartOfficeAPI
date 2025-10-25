@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 //P
 use App\Http\Controllers\Services\PropertiesController;
 use App\Http\Controllers\Services\PropertyRoomsController;
+use App\Http\Controllers\Services\PropertyRoomEquipmentsController;
 
 //U
 use App\Http\Controllers\Services\UsersController;
@@ -28,9 +29,15 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     Route::prefix('PropertyRooms')->group(function (){
-        Route::post('/getPropertyRooms', [PropertyRoomsController::class, 'getPropertyRooms'])->name('Properties.getPropertyRooms');
-        Route::post('/getPropertyRoom', [PropertyRoomsController::class, 'getPropertyRoom'])->name('Properties.getPropertyRoom');
-        Route::post('/setPropertyRoom', [PropertyRoomsController::class, 'setPropertyRoom'])->name('Properties.setPropertyRoom');
+        Route::post('/getPropertyRooms', [PropertyRoomsController::class, 'getPropertyRooms'])->name('propertyRooms.getPropertyRooms');
+        Route::post('/getPropertyRoom', [PropertyRoomsController::class, 'getPropertyRoom'])->name('propertyRooms.getPropertyRoom');
+        Route::post('/setPropertyRoom', [PropertyRoomsController::class, 'setPropertyRoom'])->name('propertyRooms.setPropertyRoom');
+    });
+
+    Route::prefix('PropertyRoomEquipments')->group(function (){
+        Route::post('/getPropertyRoomEquipments', [PropertyRoomEquipmentsController::class, 'getPropertyRoomEquipments'])->name('propertyRoomEquipments.getPropertyRoomEquipments');
+        Route::post('/getPropertyRoomEquipment', [PropertyRoomEquipmentsController::class, 'getPropertyRoomEquipment'])->name('propertyRoomEquipments.getPropertyRoomEquipment');
+        Route::post('/setPropertyRoomEquipment', [PropertyRoomEquipmentsController::class, 'setPropertyRoomEquipment'])->name('propertyRoomEquipments.setPropertyRoomEquipment');
     });
 
     // U

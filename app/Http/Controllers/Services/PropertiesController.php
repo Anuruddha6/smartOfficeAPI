@@ -36,6 +36,13 @@ class PropertiesController extends Controller
             ->join('locations', 'properties.location_id', 'locations.id')
             ->join('districts', 'locations.district_id', 'districts.id')
             ->join('provinces', 'districts.province_id', 'provinces.id')
+            ->with([
+                'property_rooms' => function ($query) {
+                    $query->select(
+                        'property_rooms.*',
+                    )->where('property_rooms.status', 1);
+                }
+            ])
             ->when(!empty($keyword), function ($query) use ($keyword) {
                 return $query->where('properties.name', 'like', '%' . $keyword . '%')
                     ->orWhere('properties.phone_1', 'like', '%' . $keyword . '%')
@@ -90,7 +97,13 @@ class PropertiesController extends Controller
                 'property_rooms' => function ($query) {
                     $query->select(
                         'property_rooms.*',
-                    )->where('property_rooms.status', 1);
+                    )->with([
+                        'property_room_equipments' => function ($query) {
+                            $query->select(
+                                'property_room_equipments.*',
+                            )->where('property_room_equipments.status', 1);
+                        }
+                    ])->where('property_rooms.status', 1);
                 }
             ])
             ->when(!empty($keyword), function ($query) use ($keyword) {
