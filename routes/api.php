@@ -17,6 +17,7 @@ use App\Http\Controllers\Services\PropertyRoomFeaturesController;
 //U
 use App\Http\Controllers\Services\UsersController;
 use App\Http\Controllers\Services\UserRolesController;
+use App\Http\Controllers\Services\UserStasusesController;
 
 
 
@@ -79,6 +80,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/getUserRoles', [UserRolesController::class, 'getUserRoles'])->name('userRoles.getUserRoles');
         Route::post('/getUserRole', [UserRolesController::class, 'getUserRole'])->name('userRoles.getUserRole');
         Route::post('/setUserRole', [UserRolesController::class, 'setUserRole'])->name('userRoles.setUserRole');
+    });
+
+    Route::prefix('UserStasuses')->group(function (){
+        Route::post('/getUserStasuses', [UserStasusesController::class, 'UserStasuses'])->name('UserStasuses.UserStasuses');
+        Route::post('/getUserStasuse', [UserStasusesController::class, 'getUserStasuse'])->name('UserStasuses.getUserStasuse');
+        Route::post('/setUserStasuse', [UserStasusesController::class, 'setUserStasuse'])->name('UserStasuses.setUserStasuse');
     });
 
 });

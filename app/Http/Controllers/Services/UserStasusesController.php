@@ -8,11 +8,9 @@ use App\Models\UserRoles;
 use App\Validator\APIValidator;
 use Illuminate\Http\Request;
 
-class UserRolesController extends Controller
+class UserStasusesController extends Controller
 {
-    private $screen = 'user_roles';
-
-    public function getUserStasuses(Request $request){
+    public function getUserRoles(Request $request){
         $out = [];
 
         $itemsPerPage = !empty($request->items_per_page) ? $request->items_per_page : $this->defaultItemsPerPage;
@@ -29,7 +27,7 @@ class UserRolesController extends Controller
         )
             ->when(!empty($keyword), function ($query) use ($keyword) {
                 return $query->where('user_roles.user_role', 'like', '%' . $keyword . '%')
-                ->orWhere('user_roles.display_name', 'like', '%' . $keyword . '%');
+                    ->orWhere('user_roles.display_name', 'like', '%' . $keyword . '%');
             })
             ->when(!empty($userRoleId), function ($query) use ($userRoleId) {
                 return $query->where('user_roles.uuid', $userRoleId);
@@ -42,7 +40,7 @@ class UserRolesController extends Controller
         return response()->json($out);
     }
 
-    public function getUserStasuse(Request $request){
+    public function getUserRole(Request $request){
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
         $userRoleId = !empty($request->user_role_id) ? $request->user_role_id : 0;
@@ -68,12 +66,11 @@ class UserRolesController extends Controller
 
     }
 
-    public function setUserStasuse(Request $request){
+    public function setUserRole(Request $request){
         $out = [];
 
         APIValidator::validate($request, [
-            'users_status' => ['required', 'max:500'],
-            'display_name' => ['required', 'max:500'],
+            'user_role' => ['required', 'max:500'],
         ]);
 
         if (!empty($request->user_role_id)){
