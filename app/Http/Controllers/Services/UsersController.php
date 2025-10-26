@@ -116,4 +116,46 @@ class UsersController extends Controller
 
         return response()->json($getUser);
     }
+
+    public function loginUser(Request $res)
+    {
+        if(Auth::attempt(['email' => $res->email, 'password' => $res->password])){
+            $user = Auth::user();
+            //$success['token'] =  $user->createToken($dealer->dealer .'-'. $user->id)->plainTextToken;
+
+            if ($user->status != 1){
+                $out = [
+                    'status' => 'error',
+                    'message' => 'User Account has been disabled. Please contact admin.',
+                ];
+            }
+            elseif ($user->is_deleted == 1){
+                $out = [
+                    'status' => 'error',
+                    'message' => 'User Account has been deleted. Please contact admin.',
+                ];
+            }
+            else{
+                $out = [
+                    'status' => 'success',
+                    'message' => '',
+                    'id' => $user->ref_id,
+                    'user_role_id' => $user->user_role_id,
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
+                    'email' => $user->email,
+                    'token' => $user->public_key,
+                ];
+            }
+        }
+        else{
+
+            $out = [
+                'status' => 'error',
+                'message' => 'Invalid Email or Password!',
+            ];
+        }
+
+        return response()->json($out);
+    }
 }
