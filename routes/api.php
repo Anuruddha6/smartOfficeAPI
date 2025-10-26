@@ -18,6 +18,10 @@ use App\Http\Controllers\Services\PropertyRoomEquipmentsController;
 use App\Http\Controllers\Services\PropertyRoomFeaturesController;
 
 
+//R
+use App\Http\Controllers\Services\ReservationsController;
+use App\Http\Controllers\Services\ReservationDetailsController;
+
 //U
 use App\Http\Controllers\Services\UsersController;
 use App\Http\Controllers\Services\UserRolesController;
@@ -81,7 +85,20 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/setProperty', [PropertiesController::class, 'setProperty'])->name('Properties.setProperty');
     });
 
+    // R
+    Route::prefix('Reservations')->group(function (){
+        Route::post('/getReservations', [ReservationsController::class, 'getReservations'])->name('Reservations.getReservations');
+        Route::post('/getReservation', [ReservationsController::class, 'getReservation'])->name('Reservations.getReservation');
+        Route::post('/setReservation', [ReservationsController::class, 'setReservation'])->name('Reservations.setReservation');
+    });
 
+    Route::prefix('ReservationDetails')->group(function (){
+        Route::post('/getReservationDetails', [ReservationDetailsController::class, 'getReservationDetails'])->name('ReservationDetails.getReservationDetails');
+        Route::post('/getReservationDetail', [ReservationDetailsController::class, 'getReservationDetail'])->name('ReservationDetails.getReservationDetail');
+        Route::post('/setReservationDetail', [ReservationDetailsController::class, 'setReservationDetail'])->name('ReservationDetails.setReservationDetail');
+    });
+
+    //P
     Route::prefix('PropertyRooms')->group(function (){
         Route::post('/setPropertyRoom', [PropertyRoomsController::class, 'setPropertyRoom'])->name('propertyRooms.setPropertyRoom');
     });
