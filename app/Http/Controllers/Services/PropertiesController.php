@@ -36,6 +36,24 @@ class PropertiesController extends Controller
             ->join('locations', 'properties.location_id', 'locations.id')
             ->join('districts', 'locations.district_id', 'districts.id')
             ->join('provinces', 'districts.province_id', 'provinces.id')
+            ->with([
+                'property_rooms' => function ($query) {
+                    $query->select(
+                        'property_rooms.*',
+                    )->with([
+                        'property_room_equipments' => function ($query) {
+                            $query->select(
+                                'property_room_equipments.*',
+                            )->where('property_room_equipments.status', 1);
+                        },
+                        'property_room_features' => function ($query) {
+                            $query->select(
+                                'property_room_features.*',
+                            )->where('property_room_features.status', 1);
+                        }
+                    ])->where('property_rooms.status', 1);
+                }
+            ])
             ->when(!empty($keyword), function ($query) use ($keyword) {
                 return $query->where('properties.name', 'like', '%' . $keyword . '%')
                     ->orWhere('properties.phone_1', 'like', '%' . $keyword . '%')
@@ -90,7 +108,18 @@ class PropertiesController extends Controller
                 'property_rooms' => function ($query) {
                     $query->select(
                         'property_rooms.*',
-                    )->where('property_rooms.status', 1);
+                    )->with([
+                        'property_room_equipments' => function ($query) {
+                            $query->select(
+                                'property_room_equipments.*',
+                            )->where('property_room_equipments.status', 1);
+                        },
+                        'property_room_features' => function ($query) {
+                            $query->select(
+                                'property_room_features.*',
+                            )->where('property_room_features.status', 1);
+                        }
+                    ])->where('property_rooms.status', 1);
                 }
             ])
             ->when(!empty($keyword), function ($query) use ($keyword) {
@@ -132,6 +161,7 @@ class PropertiesController extends Controller
             'user_id' => ['required'],
             'location_id' => ['required'],
             'name' => ['required', 'max:500'],
+            'property_image' => ['required'],
         ]);
 
 
@@ -157,6 +187,7 @@ class PropertiesController extends Controller
         $save->address_2 = !empty($request->address_2) ? $request->address_2 : null;
         $save->town = !empty($request->town) ? $request->town : null;
         $save->city = !empty($request->city) ? $request->city : null;
+        $save->property_image = !empty($request->property_image) ? $request->property_image : 'default-property.jpg';
 
         $save->save();
 
@@ -174,3 +205,10 @@ class PropertiesController extends Controller
         return response()->json($getProperty);
     }
 }
+
+
+
+
+
+
+

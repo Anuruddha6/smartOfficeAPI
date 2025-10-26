@@ -4,6 +4,7 @@ namespace App\Http\Controllers\services;
 
 use App\Helpers\CommonHelper;
 use App\Http\Controllers\Controller;
+use App\Models\Properties;
 use App\Models\PropertyRooms;
 use App\Validator\APIValidator;
 use Illuminate\Http\Request;
@@ -30,6 +31,18 @@ class PropertyRoomsController extends Controller
 
         )
             ->join('properties', 'property_rooms.property_id', 'properties.id')
+            ->with([
+                'property_room_equipments' => function ($query) {
+                    $query->select(
+                        'property_room_equipments.*',
+                    )->where('property_room_equipments.status', 1);
+                },
+                'property_room_features' => function ($query) {
+                    $query->select(
+                        'property_room_features.*',
+                    )->where('property_room_features.status', 1);
+                }
+            ])
             ->when(!empty($keyword), function ($query) use ($keyword) {
                 return $query->where('property_rooms.name', 'like', '%' . $keyword . '%')
                     ->orWhere('property_rooms.people', 'like', '%' . $keyword . '%')
@@ -44,8 +57,10 @@ class PropertyRoomsController extends Controller
                 return $query->where('property_rooms.uuid', $propertyRoomId);
             })
             ->when(!empty($propertyId), function ($query) use ($propertyId) {
-                return $query->where('property_rooms.property_id', $propertyId);
+                return $query->where('properties.uuid', $propertyId);
             })
+
+            ->where('property_rooms.status', $status)
             ->where('properties.status', $status)
             ->orderBy('id', 'ASC')
             ->paginate($itemsPerPage, ['*'], 'page', $currentPage);
@@ -67,6 +82,18 @@ class PropertyRoomsController extends Controller
 
         )
             ->join('properties', 'property_rooms.property_id', 'properties.id')
+            ->with([
+                'property_room_equipments' => function ($query) {
+                    $query->select(
+                        'property_room_equipments.*',
+                    )->where('property_room_equipments.status', 1);
+                },
+                'property_room_features' => function ($query) {
+                    $query->select(
+                        'property_room_features.*',
+                    )->where('property_room_features.status', 1);
+                }
+            ])
             ->when(!empty($keyword), function ($query) use ($keyword) {
                 return $query->where('property_rooms.name', 'like', '%' . $keyword . '%')
                     ->orWhere('property_rooms.people', 'like', '%' . $keyword . '%')
@@ -81,8 +108,9 @@ class PropertyRoomsController extends Controller
                 return $query->where('property_rooms.uuid', $propertyRoomId);
             })
             ->when(!empty($propertyId), function ($query) use ($propertyId) {
-                return $query->where('property_rooms.property_id', $propertyId);
+                return $query->where('properties.uuid', $propertyId);
             })
+            ->where('property_rooms.status', $status)
             ->where('properties.status', $status)
             ->first();
 
@@ -102,9 +130,10 @@ class PropertyRoomsController extends Controller
         if (!empty($request->property_room_id)){
             $save = PropertyRooms::where('uuid', $request->property_room_id)->first();
         }else{
+            $property = Properties::where('uuid', $request->property_id)->first();
 
             $save = new PropertyRooms();
-            $save->property_id = $request->property_id;
+            $save->property_id = $property->id;
             $save->status = 1;
         }
 
@@ -120,7 +149,7 @@ class PropertyRoomsController extends Controller
         $save->save();
 
 
-        if (empty($save->uuid) && empty($save->uuid)){
+        if (empty($save->uuid)){
             $getCommon = new CommonHelper();
             $uuId = $getCommon->generateUUId($this->screen, $save->id);
             $tProperty = PropertyRooms::find($save->id);
