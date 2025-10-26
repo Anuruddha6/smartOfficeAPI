@@ -29,46 +29,68 @@ use App\Http\Controllers\Services\VendorPaymentsController;
 Route::post('/Users/setUser', [UsersController::class, 'setUser'])->name('setUser');
 Route::post('/Users/loginUser', [UsersController::class, 'loginUser'])->name('loginUser');
 
+// A
+Route::prefix('ApplicationSettings')->group(function (){
+    Route::post('/getApplicationSetting', [ApplicationSettingsController::class, 'getApplicationSetting'])->name('ApplicationSettings.getApplicationSetting');
+});
+
+// L
+Route::prefix('Locations')->group(function (){
+    Route::post('/getLocations', [LocationsController::class, 'getLocations'])->name('Locations.getLocations');
+    Route::post('/getLocation', [LocationsController::class, 'getLocation'])->name('Locations.getLocation');
+});
+
+// P
+Route::prefix('Properties')->group(function (){
+    Route::post('/getProperties', [PropertiesController::class, 'getProperties'])->name('Properties.getProperties');
+    Route::post('/getProperty', [PropertiesController::class, 'getProperty'])->name('Properties.getProperty');
+});
+
+
+Route::prefix('PropertyRooms')->group(function (){
+    Route::post('/getPropertyRooms', [PropertyRoomsController::class, 'getPropertyRooms'])->name('propertyRooms.getPropertyRooms');
+    Route::post('/getPropertyRoom', [PropertyRoomsController::class, 'getPropertyRoom'])->name('propertyRooms.getPropertyRoom');
+});
+
+Route::prefix('PropertyRoomEquipments')->group(function (){
+    Route::post('/getPropertyRoomEquipments', [PropertyRoomEquipmentsController::class, 'getPropertyRoomEquipments'])->name('propertyRoomEquipments.getPropertyRoomEquipments');
+    Route::post('/getPropertyRoomEquipment', [PropertyRoomEquipmentsController::class, 'getPropertyRoomEquipment'])->name('propertyRoomEquipments.getPropertyRoomEquipment');
+});
+
+Route::prefix('PropertyRoomFeatures')->group(function (){
+    Route::post('/getPropertyRoomFeatures', [PropertyRoomFeaturesController::class, 'getPropertyRoomFeatures'])->name('propertyRoomFeatures.getPropertyRoomFeatures');
+    Route::post('/getPropertyRoomFeature', [PropertyRoomFeaturesController::class, 'getPropertyRoomFeature'])->name('propertyRoomFeatures.getPropertyRoomFeature');
+});
+
 
 // Auth Routes
 Route::middleware('auth:sanctum')->group(function () {
 
     // A
     Route::prefix('ApplicationSettings')->group(function (){
-        Route::post('/getApplicationSetting', [ApplicationSettingsController::class, 'getApplicationSetting'])->name('ApplicationSettings.getApplicationSetting');
         Route::post('/setApplicationSetting', [ApplicationSettingsController::class, 'setApplicationSetting'])->name('ApplicationSettings.setApplicationSetting');
     });
 
     // L
     Route::prefix('Locations')->group(function (){
-        Route::post('/getLocations', [LocationsController::class, 'getLocations'])->name('Locations.getLocations');
-        Route::post('/getLocation', [LocationsController::class, 'getLocation'])->name('Locations.getLocation');
         Route::post('/setLocation', [LocationsController::class, 'setLocation'])->name('Locations.setLocation');
     });
 
     // P
     Route::prefix('Properties')->group(function (){
-        Route::post('/getProperties', [PropertiesController::class, 'getProperties'])->name('Properties.getProperties');
-        Route::post('/getProperty', [PropertiesController::class, 'getProperty'])->name('Properties.getProperty');
         Route::post('/setProperty', [PropertiesController::class, 'setProperty'])->name('Properties.setProperty');
     });
 
 
     Route::prefix('PropertyRooms')->group(function (){
-        Route::post('/getPropertyRooms', [PropertyRoomsController::class, 'getPropertyRooms'])->name('propertyRooms.getPropertyRooms');
-        Route::post('/getPropertyRoom', [PropertyRoomsController::class, 'getPropertyRoom'])->name('propertyRooms.getPropertyRoom');
         Route::post('/setPropertyRoom', [PropertyRoomsController::class, 'setPropertyRoom'])->name('propertyRooms.setPropertyRoom');
     });
 
     Route::prefix('PropertyRoomEquipments')->group(function (){
-        Route::post('/getPropertyRoomEquipments', [PropertyRoomEquipmentsController::class, 'getPropertyRoomEquipments'])->name('propertyRoomEquipments.getPropertyRoomEquipments');
-        Route::post('/getPropertyRoomEquipment', [PropertyRoomEquipmentsController::class, 'getPropertyRoomEquipment'])->name('propertyRoomEquipments.getPropertyRoomEquipment');
         Route::post('/setPropertyRoomEquipment', [PropertyRoomEquipmentsController::class, 'setPropertyRoomEquipment'])->name('propertyRoomEquipments.setPropertyRoomEquipment');
     });
 
     Route::prefix('PropertyRoomFeatures')->group(function (){
-        Route::post('/getPropertyRoomFeatures', [PropertyRoomFeaturesController::class, 'getPropertyRoomFeatures'])->name('propertyRoomFeatures.getPropertyRoomFeatures');
-        Route::post('/getPropertyRoomFeature', [PropertyRoomFeaturesController::class, 'getPropertyRoomFeature'])->name('propertyRoomFeatures.getPropertyRoomFeature');
         Route::post('/setPropertyRoomFeature', [PropertyRoomFeaturesController::class, 'setPropertyRoomFeature'])->name('propertyRoomFeatures.setPropertyRoomFeature');
     });
 
