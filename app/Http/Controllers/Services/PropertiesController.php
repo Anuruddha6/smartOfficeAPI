@@ -205,3 +205,10 @@ class PropertiesController extends Controller
         return response()->json($getProperty);
     }
 }
+
+
+
+
+
+
+

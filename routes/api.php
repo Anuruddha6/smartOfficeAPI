@@ -3,6 +3,10 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+
+//A
+use App\Http\Controllers\Services\ApplicationSettingsController;
+
 //L
 use App\Http\Controllers\Services\LocationsController;
 
@@ -17,9 +21,10 @@ use App\Http\Controllers\Services\PropertyRoomFeaturesController;
 //U
 use App\Http\Controllers\Services\UsersController;
 use App\Http\Controllers\Services\UserRolesController;
-use App\Http\Controllers\Services\UserStasusesController;
+use App\Http\Controllers\Services\UserStatusesController;
 
-
+//v
+use App\Http\Controllers\Services\VendorPaymentsController;
 
 Route::post('/Users/setUser', [UsersController::class, 'setUser'])->name('setUser');
 Route::post('/Users/loginUser', [UsersController::class, 'loginUser'])->name('loginUser');
@@ -27,6 +32,12 @@ Route::post('/Users/loginUser', [UsersController::class, 'loginUser'])->name('lo
 
 // Auth Routes
 Route::middleware('auth:sanctum')->group(function () {
+
+    // A
+    Route::prefix('ApplicationSettings')->group(function (){
+        Route::post('/getApplicationSetting', [ApplicationSettingsController::class, 'getApplicationSetting'])->name('ApplicationSettings.getApplicationSetting');
+        Route::post('/setApplicationSetting', [ApplicationSettingsController::class, 'setApplicationSetting'])->name('ApplicationSettings.setApplicationSetting');
+    });
 
     // L
     Route::prefix('Locations')->group(function (){
@@ -82,10 +93,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/setUserRole', [UserRolesController::class, 'setUserRole'])->name('userRoles.setUserRole');
     });
 
-    Route::prefix('UserStasuses')->group(function (){
-        Route::post('/getUserStasuses', [UserStasusesController::class, 'UserStasuses'])->name('UserStasuses.UserStasuses');
-        Route::post('/getUserStasuse', [UserStasusesController::class, 'getUserStasuse'])->name('UserStasuses.getUserStasuse');
-        Route::post('/setUserStasuse', [UserStasusesController::class, 'setUserStasuse'])->name('UserStasuses.setUserStasuse');
+    Route::prefix('UserStatuses')->group(function (){
+        Route::post('/getUserStatuses', [UserStatusesController::class, 'getUserStatuses'])->name('UserStatuses.getUserStatuses');
+        Route::post('/getUserStatus', [UserStatusesController::class, 'getUserStatus'])->name('UserStatuses.getUserStatus');
+        Route::post('/setUserStatus', [UserStatusesController::class, 'setUserStatus'])->name('UserStatuses.setUserStatus');
     });
 
+    // v
+    Route::prefix('VendorPayments')->group(function (){
+        Route::post('/getVendorPayments', [VendorPaymentsController::class, 'getVendorPayments'])->name('VendorPayments.getVendorPayments');
+        Route::post('/getVendorPayment', [VendorPaymentsController::class, 'getVendorPayment'])->name('VendorPayments.getVendorPayment');
+        Route::post('/setVendorPayment', [VendorPaymentsController::class, 'setVendorPayment'])->name('VendorPayments.setVendorPayment');
+    });
 });
