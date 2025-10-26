@@ -111,7 +111,7 @@ class VendorPaymentsController extends Controller
             $save = new VendorPayments();
             $save->vendor_id = $vendor->id;
             $save->paid_by = $this->userId;
-            $save->paid_time = $this->dbInsertTime();
+            $save->paid_at = $this->dbInsertTime();
             $save->status = 1;
         }
 
