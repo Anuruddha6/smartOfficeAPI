@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Services;
 use App\Helpers\CommonHelper;
 use App\Http\Controllers\Controller;
 use App\Mail\TestMail;
-use App\Models\PropertyRoomFeatures;
-use App\Models\PropertyRooms;
 use App\Models\Reservations;
 use App\Models\User;
 use App\Validator\APIValidator;
@@ -15,7 +13,7 @@ use Illuminate\Support\Facades\Mail;
 
 class ReservationsController extends Controller
 {
-    private $screen = 'reservation_details';
+    private $screen = 'reservations';
     public function getReservations(Request $request){
         $out = [];
         //Search
@@ -28,8 +26,8 @@ class ReservationsController extends Controller
         $reservationStatusId = !empty($request->reservation_status_id) ? $request->reservation_status_id : 0;
 
 
-        $out = PropertyRoomFeatures::select(
-            'reservation_details.*',
+        $out = Reservations::select(
+            'reservations.*',
 
         )
             ->join('users', 'reservations.user_id', 'users.id')
@@ -73,8 +71,8 @@ class ReservationsController extends Controller
         $reservationStatusId = !empty($request->reservation_status_id) ? $request->reservation_status_id : 0;
 
 
-        $out = PropertyRoomFeatures::select(
-            'reservation_details.*',
+        $out = Reservations::select(
+            'reservations.*',
 
         )
             ->join('users', 'reservations.user_id', 'users.id')
