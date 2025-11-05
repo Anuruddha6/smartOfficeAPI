@@ -23,12 +23,13 @@ class ReservationDetailsController extends Controller
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
         $reservationId = !empty($request->reservation_id) ? $request->reservation_id : 0;
+        $propertyRoomId = !empty($request->property_room_id) ? $request->property_room_id : 0;
         $userId = !empty($request->user_id) ? $request->user_id : 0;
         $reservationStatusId = !empty($request->reservation_status_id) ? $request->reservation_status_id : 0;
 
 
         $out = PropertyRoomFeatures::select(
-            'reservations.*',
+            'reservation_details.*',
 
         )
             ->join('users', 'reservations.user_id', 'users.id')
