@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class ReservationDetailEquipments extends Model
 {
-    use HasFactory;
-    const CREATED_AT = 'created_at';
-    const UPDATED_AT = 'updated_at';
+        use HasFactory;
+        const CREATED_AT = 'created_at';
+        const UPDATED_AT = 'updated_at';
 
-    protected $table = 'reservation_detail_equipments';
+        protected $table = 'reservation_detail_equipments';
+
 }
