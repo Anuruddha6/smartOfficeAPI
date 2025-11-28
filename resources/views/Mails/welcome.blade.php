@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Confirmation</title>
+    <title>Welcome</title>
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,900" rel="stylesheet">
 
     <style type="text/css">
@@ -135,11 +135,6 @@
                 </tr>
                 <tr>
                     <td align="center">
-                        <img src="{{ asset('assets/common/images/email/success.png') }}" alt="">
-                    </td>
-                </tr>
-                <tr>
-                    <td align="center">
                         <h2 class="title">thank you for registering with us.</h2>
                     </td>
                 </tr>
@@ -154,7 +149,7 @@
                 </tr>
                 <tr>
                     <td align="center">
-                        <a class="btn" href="">ACTIVATE NOW</a>
+                        <a class="btn" href="{{ $data['url'] }}">ACTIVATE NOW</a>
                     </td>
                 </tr>
                 <tr>

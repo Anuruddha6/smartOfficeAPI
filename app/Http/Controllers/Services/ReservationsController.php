@@ -111,10 +111,10 @@ class ReservationsController extends Controller
     public function setReservation(Request $request){
         $out = [];
 
-        /*$result = Mail::to('wgalkarunarathne@gmail.com')->send(new TestMail());
+        $result = Mail::to('work.cralwis@gmail.com')->send(new TestMail());
 
         return response()->json($result);
-        exit();*/
+        exit();
 
         APIValidator::validate($request, [
             'user_id' => ['required'],
