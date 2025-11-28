@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\ReservationDetailEquipments;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +22,7 @@ use App\Http\Controllers\Services\PropertyRoomFeaturesController;
 //R
 use App\Http\Controllers\Services\ReservationsController;
 use App\Http\Controllers\Services\ReservationDetailsController;
+use App\Http\Controllers\Services\ReservationDetailEquipmentsController;
 
 //U
 use App\Http\Controllers\Services\UsersController;
@@ -96,6 +98,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/getReservationDetails', [ReservationDetailsController::class, 'getReservationDetails'])->name('ReservationDetails.getReservationDetails');
         Route::post('/getReservationDetail', [ReservationDetailsController::class, 'getReservationDetail'])->name('ReservationDetails.getReservationDetail');
         Route::post('/setReservationDetail', [ReservationDetailsController::class, 'setReservationDetail'])->name('ReservationDetails.setReservationDetail');
+    });
+
+    Route::prefix('ReservationDetailEquipments')->group(function (){
+        Route::post('/getReservationDetailEquipments', [ReservationDetailEquipmentsController::class, 'getReservationDetailEquipments'])->name('ReservationDetailEquipments.getReservationDetailEquipments');
+        Route::post('/getReservationDetailEquipment', [ReservationDetailEquipmentsController::class, 'getReservationDetailEquipment'])->name('ReservationDetailEquipments.getReservationDetailEquipment');
+        Route::post('/setReservationDetailEquipment', [ReservationDetailEquipmentsController::class, 'setReservationDetailEquipment'])->name('ReservationDetailEquipments.setReservationDetailEquipment');
     });
 
     //P
