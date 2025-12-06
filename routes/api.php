@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Route;
 //A
 use App\Http\Controllers\Services\ApplicationSettingsController;
 
+//d
+use App\Http\Controllers\Services\DistrictsController;
+
 //L
 use App\Http\Controllers\Services\LocationsController;
 
@@ -39,6 +42,13 @@ Route::post('/Users/loginUser', [UsersController::class, 'loginUser'])->name('lo
 Route::prefix('ApplicationSettings')->group(function (){
     Route::post('/getApplicationSetting', [ApplicationSettingsController::class, 'getApplicationSetting'])->name('ApplicationSettings.getApplicationSetting');
 });
+
+// D
+Route::prefix('Districts')->group(function (){
+    Route::post('/getDistricts', [DistrictsController::class, 'getDistricts'])->name('Districts.getDistricts');
+    Route::post('/getDistrict', [DistrictsController::class, 'getDistrict'])->name('Districts.getDistrict');
+});
+
 
 // L
 Route::prefix('Locations')->group(function (){
@@ -75,6 +85,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // A
     Route::prefix('ApplicationSettings')->group(function (){
         Route::post('/setApplicationSetting', [ApplicationSettingsController::class, 'setApplicationSetting'])->name('ApplicationSettings.setApplicationSetting');
+    });
+
+    // D
+    Route::prefix('Districts')->group(function (){
+        Route::post('/setDistrict', [DistrictsController::class, 'setDistrict'])->name('Districts.setDistrict');
     });
 
     // L
@@ -129,9 +144,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('Users')->group(function (){
         Route::post('/getUsers', [UsersController::class, 'getUsers'])->name('Users.getUsers');
         Route::post('/getUser', [UsersController::class, 'getUser'])->name('Users.getUser');
-        /*Route::post('/deleteUser', [UsersController::class, 'deleteUser'])->name('Users.deleteUser');
-        Route::post('/activateUser', [UsersController::class, 'activateUser'])->name('Users.activateUser');
-        Route::post('/logoutUser', [UsersController::class, 'logoutUser'])->name('Users.logoutUser');*/
+        Route::post('/getDetailsForUserCreations', [UsersController::class, 'getDetailsForUserCreations'])->name('Users.getDetailsForUserCreations');
+        Route::post('/getDetailsForUserEdit', [UsersController::class, 'getDetailsForUserEdit'])->name('Users.getDetailsForUserEdit');
+
     });
 
     Route::prefix('UserRoles')->group(function (){
