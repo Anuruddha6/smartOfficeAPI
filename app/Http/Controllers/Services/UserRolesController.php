@@ -12,7 +12,7 @@ class UserRolesController extends Controller
 {
     private $screen = 'user_roles';
 
-    public function getUserStasuses(Request $request){
+    public function getUserRoles(Request $request){
         $out = [];
 
         $itemsPerPage = !empty($request->items_per_page) ? $request->items_per_page : $this->defaultItemsPerPage;
@@ -42,7 +42,7 @@ class UserRolesController extends Controller
         return response()->json($out);
     }
 
-    public function getUserStasuse(Request $request){
+    public function getUserRole(Request $request){
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
         $userRoleId = !empty($request->user_role_id) ? $request->user_role_id : 0;
@@ -68,12 +68,12 @@ class UserRolesController extends Controller
 
     }
 
-    public function setUserStasuse(Request $request){
+    public function setUserRole(Request $request){
         $out = [];
 
-        APIValidator::validate($request, [
-            'users_status' => ['required', 'max:500'],
-            'display_name' => ['required', 'max:500'],
+        $validated = $request->validate([
+            'user_role' => 'required',
+            'display_name' => 'required',
         ]);
 
         if (!empty($request->user_role_id)){
@@ -98,8 +98,12 @@ class UserRolesController extends Controller
             $update->save();
         }
 
-        $getUserRole = UserRoles::find($save->id);
+        $out = [
+            'status' => 'success',
+            'message_title' => 'Success!',
+            'message_text' => 'User Role Has Been Saved!',
+        ];
 
-        return response()->json($getUserRole);
+        return response()->json($out);
     }
 }

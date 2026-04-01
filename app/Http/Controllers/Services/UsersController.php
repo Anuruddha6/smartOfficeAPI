@@ -145,6 +145,18 @@ class UsersController extends Controller
             $user->email = $request->email;
         }
 
+
+        $getDistrictId = !empty($request->district_id) ? $request->district_id : 0;
+
+        $provinceId = 0;
+        $districtId = 0;
+        if (!empty($getDistrictId)){
+            $d = Districts::where('uuid', $getDistrictId)->first();
+            $districtId = $d->id;
+            $provinceId = $d->province_id;
+        }
+
+
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
         $user->user_role_id  = !empty($request->user_role_id) ? $request->user_role_id : 4;
@@ -154,7 +166,8 @@ class UsersController extends Controller
         $user->address_2  = !empty($request->address_2) ? $request->address_2 : null;
         $user->town  = !empty($request->town) ? $request->town : null;
         $user->city  = !empty($request->city) ? $request->city : null;
-        $user->district_id  = !empty($request->district_id) ? $request->district_id : null;
+        $user->province_id  = $provinceId;
+        $user->district_id  = $districtId;
         $user->image  = !empty($request->image) ? $request->image : "user.png";
 
         $user->save();
