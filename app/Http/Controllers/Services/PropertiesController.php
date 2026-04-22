@@ -24,6 +24,7 @@ class PropertiesController extends Controller
         $propertyId = !empty($request->property_id) ? $request->property_id : 0;
         $locationId = !empty($request->location_id) ? $request->location_id : 0;
         $status = !empty($request->status) ? $request->status : 1;
+        $isIgnoreStatus = !empty($request->is_ignore_status) ? $request->is_ignore_status : 0;
         $isDeleted = !empty($request->is_deleted) ? $request->is_deleted : 0;
         $isVerified = !empty($request->is_verified) ? $request->is_verified : 1;
 
@@ -79,7 +80,9 @@ class PropertiesController extends Controller
             }, function ($query) use ($request){
                 return $query->where('properties.is_verified', 0);
             })
-            ->where('properties.status', $status)
+            ->when(empty($isIgnoreStatus), function ($query) use ($status) {
+                return $query->where('properties.status', $status);
+            })
             ->orderBy('id', 'ASC')
             ->paginate($itemsPerPage, ['*'], 'page', $currentPage);
 
@@ -147,7 +150,6 @@ class PropertiesController extends Controller
             }, function ($query) use ($request){
                 return $query->where('properties.is_verified', 0);
             })
-            ->where('properties.status', $status)
             ->first();
 
         return response()->json($out);
@@ -203,6 +205,28 @@ class PropertiesController extends Controller
         $getProperty = Properties::find($save->id);
 
         return response()->json($getProperty);
+    }
+
+    public function setStatus(Request $request){
+        $out = [];
+        $save = Properties::where('uuid', $request->id)->first();
+        $updatedStatus = 1;
+
+        if (!empty($save->status)){
+            $updatedStatus = 0;
+        }
+        $save->status = $updatedStatus;
+        $save->save();
+
+
+        $out = [
+            'updated_status' => $updatedStatus,
+            'status' => 'success',
+            'message_title' => 'Success!',
+            'message_text' => 'Status Has Been Changed!',
+        ];
+
+        return response()->json($out);
     }
 }
 

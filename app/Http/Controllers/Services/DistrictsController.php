@@ -21,6 +21,7 @@ class DistrictsController extends Controller
         $districtId = !empty($request->district_id) ? $request->district_id : 0;
         $provinceId = !empty($request->province_id) ? $request->province_id : 0;
         $status = !empty($request->status) ? $request->status : 1;
+        $isIgnoreStatus = !empty($request->is_ignore_status) ? $request->is_ignore_status : 0;
 
 
         $out = Districts::select(
@@ -36,7 +37,9 @@ class DistrictsController extends Controller
             ->when(!empty($provinceId), function ($query) use ($provinceId) {
                 return $query->where('provinces.uuid', $provinceId);
             })
-            ->where('districts.status', $status)
+            ->when(empty($isIgnoreStatus), function ($query) use ($status) {
+                return $query->where('districts.status', $status);
+            })
             ->where('provinces.status', $status)
             ->orderBy('id', 'ASC')
             ->get();
@@ -65,7 +68,6 @@ class DistrictsController extends Controller
             ->when(!empty($provinceId), function ($query) use ($provinceId) {
                 return $query->where('provinces.uuid', $provinceId);
             })
-            ->where('districts.status', $status)
             ->where('provinces.status', $status)
             ->orderBy('id', 'ASC')
             ->first();
@@ -108,5 +110,27 @@ class DistrictsController extends Controller
         $getDistricts = Districts::find($save->id);
 
         return response()->json($getDistricts);
+    }
+
+    public function setStatus(Request $request){
+        $out = [];
+        $save = Districts::where('uuid', $request->id)->first();
+        $updatedStatus = 1;
+
+        if (!empty($save->status)){
+            $updatedStatus = 0;
+        }
+        $save->status = $updatedStatus;
+        $save->save();
+
+
+        $out = [
+            'updated_status' => $updatedStatus,
+            'status' => 'success',
+            'message_title' => 'Success!',
+            'message_text' => 'Status Has Been Changed!',
+        ];
+
+        return response()->json($out);
     }
 }

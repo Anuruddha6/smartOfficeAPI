@@ -20,6 +20,7 @@ class UserStatusesController extends Controller
         $keyword = !empty($request->keyword) ? $request->keyword : '';
         $userStatusId = !empty($request->user_status_id) ? $request->user_status_id : 0;
         $status = !empty($request->status) ? $request->status : 1;
+        $isIgnoreStatus = !empty($request->is_ignore_status) ? $request->is_ignore_status : 0;
 
 
         $out = UserStatuses::class::select(
@@ -33,8 +34,9 @@ class UserStatusesController extends Controller
             ->when(!empty($userStatusId), function ($query) use ($userStatusId) {
                 return $query->where('user_statuses.uuid', $userStatusId);
             })
-
-            ->where('user_statuses.status', $status)
+            ->when(empty($isIgnoreStatus), function ($query) use ($status) {
+                return $query->where('user_statuses.status', $status);
+            })
             ->orderBy('id', 'ASC')
             ->paginate($itemsPerPage, ['*'], 'page', $currentPage);
 
@@ -45,7 +47,6 @@ class UserStatusesController extends Controller
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
         $userStatusId = !empty($request->user_status_id) ? $request->user_status_id : 0;
-        $status = !empty($request->status) ? $request->status : 1;
 
 
         $out = UserStatuses::class::select(
@@ -59,44 +60,31 @@ class UserStatusesController extends Controller
             ->when(!empty($userStatusId), function ($query) use ($userStatusId) {
                 return $query->where('user_statuses.uuid', $userStatusId);
             })
-
-            ->where('user_statuses.status', $status)
             ->first();
 
         return response()->json($out);
 
     }
 
-    public function setUserStatus(Request $request){
+    public function setStatus(Request $request){
         $out = [];
+        $save = UserStatuses::where('uuid', $request->id)->first();
+        $updatedStatus = 1;
 
-        APIValidator::validate($request, [
-            'users_status' => ['required', 'max:500'],
-        ]);
-
-        if (!empty($request->users_status_id)){
-            $save = UserStatuses::where('uuid', $request->users_status_id)->first();
-        }else{
-
-            $save = new UserStatuses();
-            $save->status = 1;
+        if (!empty($save->status)){
+            $updatedStatus = 0;
         }
-
-        $save->users_status = !empty($request->users_status) ? $request->users_status : null;
-
+        $save->status = $updatedStatus;
         $save->save();
 
 
-        if (empty($save->uuid)){
-            $getCommon = new CommonHelper();
-            $uuId = $getCommon->generateUUId($this->screen, $save->id);
-            $update = UserStatuses::find($save->id);
-            $update->uuid = $uuId;
-            $update->save();
-        }
+        $out = [
+            'updated_status' => $updatedStatus,
+            'status' => 'success',
+            'message_title' => 'Success!',
+            'message_text' => 'Status Has Been Changed!',
+        ];
 
-        $getUserStatus = UserStatuses::find($save->id);
-
-        return response()->json($getUserStatus);
+        return response()->json($out);
     }
 }

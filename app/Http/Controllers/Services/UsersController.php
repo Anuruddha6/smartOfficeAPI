@@ -35,6 +35,7 @@ class UsersController extends Controller
         $userRoleId = !empty($request->user_role_id) ? $request->user_role_id : 0;
         $isDeletedOnly = !empty($request->is_deleted) ? $request->is_deleted : 0;
         $status = !empty($request->status) ? $request->status : 1;
+        $isIgnoreStatus = !empty($request->is_ignore_status) ? $request->is_ignore_status : 0;
 
         $out = User::select(
             'users.*',
@@ -61,7 +62,9 @@ class UsersController extends Controller
             }, function ($query) use ($request){
                 return $query->where('users.is_deleted', 0);
             })
-            ->where('users.status', $status)
+            ->when(empty($isIgnoreStatus), function ($query) use ($status) {
+                return $query->where('users.status', $status);
+            })
             ->orderBy('id', 'ASC')
             ->paginate($itemsPerPage, ['*'], 'page', $currentPage);
 
@@ -105,7 +108,6 @@ class UsersController extends Controller
             }, function ($query) use ($request){
                 return $query->where('users.is_deleted', 0);
             })
-            ->where('users.status', $status)
             ->first();
 
         return response()->json($out);
@@ -291,6 +293,28 @@ class UsersController extends Controller
 
         return response()->json($out);
 
+    }
+
+    public function setStatus(Request $request){
+        $out = [];
+        $save = User::where('uuid', $request->id)->first();
+        $updatedStatus = 1;
+
+        if (!empty($save->status)){
+            $updatedStatus = 0;
+        }
+        $save->status = $updatedStatus;
+        $save->save();
+
+
+        $out = [
+            'updated_status' => $updatedStatus,
+            'status' => 'success',
+            'message_title' => 'Success!',
+            'message_text' => 'Status Has Been Changed!',
+        ];
+
+        return response()->json($out);
     }
 
 }

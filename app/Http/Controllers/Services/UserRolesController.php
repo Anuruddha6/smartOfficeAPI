@@ -21,6 +21,7 @@ class UserRolesController extends Controller
         $keyword = !empty($request->keyword) ? $request->keyword : '';
         $userRoleId = !empty($request->user_role_id) ? $request->user_role_id : 0;
         $status = !empty($request->status) ? $request->status : 1;
+        $isIgnoreStatus = !empty($request->is_ignore_status) ? $request->is_ignore_status : 0;
 
 
         $out = UserRoles::select(
@@ -34,8 +35,9 @@ class UserRolesController extends Controller
             ->when(!empty($userRoleId), function ($query) use ($userRoleId) {
                 return $query->where('user_roles.uuid', $userRoleId);
             })
-
-            ->where('user_roles.status', $status)
+            ->when(empty($isIgnoreStatus), function ($query) use ($status) {
+                return $query->where('user_roles.status', $status);
+            })
             ->orderBy('id', 'ASC')
             ->paginate($itemsPerPage, ['*'], 'page', $currentPage);
 
@@ -46,7 +48,6 @@ class UserRolesController extends Controller
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
         $userRoleId = !empty($request->user_role_id) ? $request->user_role_id : 0;
-        $status = !empty($request->status) ? $request->status : 1;
 
 
         $out = UserRoles::select(
@@ -60,8 +61,6 @@ class UserRolesController extends Controller
             ->when(!empty($userRoleId), function ($query) use ($userRoleId) {
                 return $query->where('user_roles.uuid', $userRoleId);
             })
-
-            ->where('user_roles.status', $status)
             ->first();
 
         return response()->json($out);
@@ -102,6 +101,28 @@ class UserRolesController extends Controller
             'status' => 'success',
             'message_title' => 'Success!',
             'message_text' => 'User Role Has Been Saved!',
+        ];
+
+        return response()->json($out);
+    }
+
+    public function setStatus(Request $request){
+        $out = [];
+        $save = UserRoles::where('uuid', $request->id)->first();
+        $updatedStatus = 1;
+
+        if (!empty($save->status)){
+            $updatedStatus = 0;
+        }
+        $save->status = $updatedStatus;
+        $save->save();
+
+
+        $out = [
+            'updated_status' => $updatedStatus,
+            'status' => 'success',
+            'message_title' => 'Success!',
+            'message_text' => 'Status Has Been Changed!',
         ];
 
         return response()->json($out);

@@ -89,17 +89,43 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // D
     Route::prefix('Districts')->group(function (){
-        Route::post('/setDistrict', [DistrictsController::class, 'setDistrict'])->name('Districts.setDistrict');
+        Route::post('/setDistrict', [DistrictsController::class, 'setDistrict'])->name('districts.setDistrict');
+        Route::post('/setStatus', [DistrictsController::class, 'setStatus'])->name('districts.setStatus');
     });
 
     // L
     Route::prefix('Locations')->group(function (){
-        Route::post('/setLocation', [LocationsController::class, 'setLocation'])->name('Locations.setLocation');
+        Route::post('/setLocation', [LocationsController::class, 'setLocation'])->name('locations.setLocation');
+        Route::post('/setStatus', [LocationsController::class, 'setStatus'])->name('locations.setStatus');
     });
 
     // P
     Route::prefix('Properties')->group(function (){
-        Route::post('/setProperty', [PropertiesController::class, 'setProperty'])->name('Properties.setProperty');
+        Route::post('/setProperty', [PropertiesController::class, 'setProperty'])->name('properties.setProperty');
+        Route::post('/setStatus', [PropertiesController::class, 'setStatus'])->name('properties.setStatus');
+    });
+
+    Route::prefix('PropertyRooms')->group(function (){
+        Route::post('/setPropertyRoom', [PropertyRoomsController::class, 'setPropertyRoom'])->name('propertyRooms.setPropertyRoom');
+        Route::post('/setStatus', [PropertyRoomsController::class, 'setStatus'])->name('propertyRooms.setStatus');
+    });
+
+
+    Route::prefix('PropertyRoomEquipments')->group(function (){
+        Route::post('/setPropertyRoomEquipment', [PropertyRoomEquipmentsController::class, 'setPropertyRoomEquipment'])->name('propertyRoomEquipments.setPropertyRoomEquipment');
+        Route::post('/setStatus', [PropertyRoomEquipmentsController::class, 'setStatus'])->name('propertyRoomEquipments.setStatus');
+    });
+
+    Route::prefix('PropertyRoomFeatures')->group(function (){
+        Route::post('/setPropertyRoomFeature', [PropertyRoomFeaturesController::class, 'setPropertyRoomFeature'])->name('propertyRoomFeatures.setPropertyRoomFeature');
+        Route::post('/setStatus', [PropertyRoomFeaturesController::class, 'setStatus'])->name('propertyRoomFeatures.setStatus');
+    });
+
+    Route::prefix('PaymentMethods')->group(function (){
+        Route::post('/getPaymentMethods', [PaymentMethodsController::class, 'getPaymentMethods'])->name('paymentMethods.getPaymentMethods');
+        Route::post('/getPaymentMethod', [PaymentMethodsController::class, 'getPaymentMethod'])->name('paymentMethods.getPaymentMethod');
+        Route::post('/setPaymentMethod', [PaymentMethodsController::class, 'setPaymentMethod'])->name('paymentMethods.setPaymentMethod');
+        Route::post('/setStatus', [PaymentMethodsController::class, 'setStatus'])->name('paymentMethods.setStatus');
     });
 
     // R
@@ -121,31 +147,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/setReservationDetailEquipment', [ReservationDetailEquipmentsController::class, 'setReservationDetailEquipment'])->name('ReservationDetailEquipments.setReservationDetailEquipment');
     });
 
-    //P
-    Route::prefix('PropertyRooms')->group(function (){
-        Route::post('/setPropertyRoom', [PropertyRoomsController::class, 'setPropertyRoom'])->name('propertyRooms.setPropertyRoom');
-    });
-
-    Route::prefix('PropertyRoomEquipments')->group(function (){
-        Route::post('/setPropertyRoomEquipment', [PropertyRoomEquipmentsController::class, 'setPropertyRoomEquipment'])->name('propertyRoomEquipments.setPropertyRoomEquipment');
-    });
-
-    Route::prefix('PropertyRoomFeatures')->group(function (){
-        Route::post('/setPropertyRoomFeature', [PropertyRoomFeaturesController::class, 'setPropertyRoomFeature'])->name('propertyRoomFeatures.setPropertyRoomFeature');
-    });
-
-    Route::prefix('PaymentMethods')->group(function (){
-        Route::post('/getPaymentMethods', [PaymentMethodsController::class, 'getPaymentMethods'])->name('paymentMethods.getPaymentMethods');
-        Route::post('/getPaymentMethod', [PaymentMethodsController::class, 'getPaymentMethod'])->name('paymentMethods.getPaymentMethod');
-        Route::post('/setPaymentMethod', [PaymentMethodsController::class, 'setPaymentMethod'])->name('paymentMethods.setPaymentMethod');
-    });
-
     // U
     Route::prefix('Users')->group(function (){
-        Route::post('/getUsers', [UsersController::class, 'getUsers'])->name('Users.getUsers');
-        Route::post('/getUser', [UsersController::class, 'getUser'])->name('Users.getUser');
-        Route::post('/getDetailsForUserCreations', [UsersController::class, 'getDetailsForUserCreations'])->name('Users.getDetailsForUserCreations');
-        Route::post('/getDetailsForUserEdit', [UsersController::class, 'getDetailsForUserEdit'])->name('Users.getDetailsForUserEdit');
+        Route::post('/getUsers', [UsersController::class, 'getUsers'])->name('users.getUsers');
+        Route::post('/getUser', [UsersController::class, 'getUser'])->name('users.getUser');
+        Route::post('/getDetailsForUserCreations', [UsersController::class, 'getDetailsForUserCreations'])->name('users.getDetailsForUserCreations');
+        Route::post('/getDetailsForUserEdit', [UsersController::class, 'getDetailsForUserEdit'])->name('users.getDetailsForUserEdit');
+        Route::post('/setStatus', [UsersController::class, 'setStatus'])->name('users.setStatus');
 
     });
 
@@ -153,12 +161,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/getUserRoles', [UserRolesController::class, 'getUserRoles'])->name('userRoles.getUserRoles');
         Route::post('/getUserRole', [UserRolesController::class, 'getUserRole'])->name('userRoles.getUserRole');
         Route::post('/setUserRole', [UserRolesController::class, 'setUserRole'])->name('userRoles.setUserRole');
+        Route::post('/setStatus', [UserRolesController::class, 'setStatus'])->name('userRoles.setStatus');
     });
 
     Route::prefix('UserStatuses')->group(function (){
         Route::post('/getUserStatuses', [UserStatusesController::class, 'getUserStatuses'])->name('UserStatuses.getUserStatuses');
         Route::post('/getUserStatus', [UserStatusesController::class, 'getUserStatus'])->name('UserStatuses.getUserStatus');
-        Route::post('/setUserStatus', [UserStatusesController::class, 'setUserStatus'])->name('UserStatuses.setUserStatus');
+        Route::post('/setStatus', [UserStatusesController::class, 'setStatus'])->name('UserStatuses.setStatus');
     });
 
     // v

@@ -23,6 +23,7 @@ class PropertyRoomEquipmentsController extends Controller
         $propertyRoomEquipmentId = !empty($request->property_room_equipment_id) ? $request->property_room_equipment_id : 0;
         $propertyRoomId = !empty($request->property_room_id) ? $request->property_room_id : 0;
         $status = !empty($request->status) ? $request->status : 1;
+        $isIgnoreStatus = !empty($request->is_ignore_status) ? $request->is_ignore_status : 0;
         $isDeleted = !empty($request->is_deleted) ? $request->is_deleted : 0;
 
 
@@ -43,7 +44,9 @@ class PropertyRoomEquipmentsController extends Controller
             ->when(!empty($propertyRoomId), function ($query) use ($propertyRoomId) {
                 return $query->where('property_rooms.uuid', $propertyRoomId);
             })
-            ->where('property_room_equipments.status', $status)
+            ->when(empty($isIgnoreStatus), function ($query) use ($status) {
+                return $query->where('property_room_equipments.status', $status);
+            })
             ->where('property_rooms.status', $status)
             ->where('properties.status', $status)
             ->orderBy('id', 'ASC')
@@ -78,7 +81,6 @@ class PropertyRoomEquipmentsController extends Controller
             ->when(!empty($propertyRoomId), function ($query) use ($propertyRoomId) {
                 return $query->where('property_rooms.uuid', $propertyRoomId);
             })
-            ->where('property_room_equipments.status', $status)
             ->where('property_rooms.status', $status)
             ->where('properties.status', $status)
             ->first();
@@ -126,5 +128,27 @@ class PropertyRoomEquipmentsController extends Controller
         $getPropertyRoomEquipment = PropertyRoomEquipments::find($save->id);
 
         return response()->json($getPropertyRoomEquipment);
+    }
+
+    public function setStatus(Request $request){
+        $out = [];
+        $save = PropertyRoomEquipments::where('uuid', $request->id)->first();
+        $updatedStatus = 1;
+
+        if (!empty($save->status)){
+            $updatedStatus = 0;
+        }
+        $save->status = $updatedStatus;
+        $save->save();
+
+
+        $out = [
+            'updated_status' => $updatedStatus,
+            'status' => 'success',
+            'message_title' => 'Success!',
+            'message_text' => 'Status Has Been Changed!',
+        ];
+
+        return response()->json($out);
     }
 }

@@ -31,6 +31,7 @@ class VendorPaymentsController extends Controller
         $accountName = !empty($request->account_number) ? $request->account_number : null;
         $status = !empty($request->status) ? $request->status : 1;
 
+
         $out = VendorPayments::select(
             'vendor_payments.*',
 
@@ -135,5 +136,27 @@ class VendorPaymentsController extends Controller
         $getVendorPayment = VendorPayments::find($save->id);
 
         return response()->json($getVendorPayment);
+    }
+
+    public function setStatus(Request $request){
+        $out = [];
+        $save = VendorPayments::where('uuid', $request->id)->first();
+        $updatedStatus = 1;
+
+        if (!empty($save->status)){
+            $updatedStatus = 0;
+        }
+        $save->status = $updatedStatus;
+        $save->save();
+
+
+        $out = [
+            'updated_status' => $updatedStatus,
+            'status' => 'success',
+            'message_title' => 'Success!',
+            'message_text' => 'Status Has Been Changed!',
+        ];
+
+        return response()->json($out);
     }
 }
