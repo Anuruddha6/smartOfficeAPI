@@ -20,6 +20,7 @@ use App\Http\Controllers\Services\PropertiesController;
 use App\Http\Controllers\Services\PropertyRoomsController;
 use App\Http\Controllers\Services\PropertyRoomEquipmentsController;
 use App\Http\Controllers\Services\PropertyRoomFeaturesController;
+use App\Http\Controllers\Services\ProvincesController;
 
 
 //R
@@ -78,6 +79,11 @@ Route::prefix('PropertyRoomFeatures')->group(function (){
     Route::post('/getPropertyRoomFeature', [PropertyRoomFeaturesController::class, 'getPropertyRoomFeature'])->name('propertyRoomFeatures.getPropertyRoomFeature');
 });
 
+Route::prefix('Provinces')->group(function (){
+    Route::post('/getProvinces', [ProvincesController::class, 'getProvinces'])->name('Provinces.getProvinces');
+    Route::post('/getProvince', [ProvincesController::class, 'getProvince'])->name('Provinces.getProvince');
+});
+
 
 // Auth Routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -128,6 +134,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/setStatus', [PaymentMethodsController::class, 'setStatus'])->name('paymentMethods.setStatus');
     });
 
+
+    Route::prefix('Provinces')->group(function (){
+        Route::post('/setProvince', [ProvincesController::class, 'setProvince'])->name('provinces.setProvince');
+        Route::post('/setStatus', [ProvincesController::class, 'setStatus'])->name('provinces.setStatus');
+    });
+
     // R
     Route::prefix('Reservations')->group(function (){
         Route::post('/getReservations', [ReservationsController::class, 'getReservations'])->name('Reservations.getReservations');
@@ -156,6 +168,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/setStatus', [UsersController::class, 'setStatus'])->name('users.setStatus');
 
     });
+
 
     Route::prefix('UserRoles')->group(function (){
         Route::post('/getUserRoles', [UserRolesController::class, 'getUserRoles'])->name('userRoles.getUserRoles');

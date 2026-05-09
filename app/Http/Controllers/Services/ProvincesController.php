@@ -2,46 +2,29 @@
 
 namespace App\Http\Controllers\Services;
 
-use App\Helpers\CommonHelper;
 use App\Http\Controllers\Controller;
-use App\Models\Districts;
-use App\Models\Locations;
 use App\Models\Provinces;
 use App\Validator\APIValidator;
 use Illuminate\Http\Request;
 
-class DistrictsController extends Controller
+class ProvincesController extends Controller
 {
-    private $screen = 'districts';
+    private $screen = 'province';
 
-    public function getDistricts(Request $request){
+    public function getProvinces(Request $request){
         $out = [];
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
-        $districtId = !empty($request->district_id) ? $request->district_id : 0;
         $provinceId = !empty($request->province_id) ? $request->province_id : 0;
         $status = !empty($request->status) ? $request->status : 1;
         $isIgnoreStatus = !empty($request->is_ignore_status) ? $request->is_ignore_status : 0;
 
 
-        $out = Districts::select(
-            'districts.*',
-            'provinces.province',
-
-
+        $out = Provinces::select(
+            'provinces.*',
         )
-            ->join('provinces', 'districts.province_id', 'provinces.id')
-            ->when(!empty($keyword), function ($query) use ($keyword) {
-                return $query->where('districts.district', 'like', '%' . $keyword . '%');
-            })
-            ->when(!empty($districtId), function ($query) use ($districtId) {
-                return $query->where('districts.uuid', $districtId);
-            })
             ->when(!empty($provinceId), function ($query) use ($provinceId) {
                 return $query->where('provinces.uuid', $provinceId);
-            })
-            ->when(empty($isIgnoreStatus), function ($query) use ($status) {
-                return $query->where('districts.status', $status);
             })
             ->where('provinces.status', $status)
             ->orderBy('id', 'ASC')
@@ -50,24 +33,21 @@ class DistrictsController extends Controller
         return response()->json($out);
     }
 
-    public function getDistrict(Request $request){
+    public function getProvince(Request $request){
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
-        $districtId = !empty($request->district_id) ? $request->district_id : 0;
         $provinceId = !empty($request->province_id) ? $request->province_id : 0;
         $status = !empty($request->status) ? $request->status : 1;
+        $isIgnoreStatus = !empty($request->is_ignore_status) ? $request->is_ignore_status : 0;
 
 
-        $out = Districts::select(
-            'districts.*',
+        $out = Provinces::select(
+            'provinces.*',
         )
-            ->join('provinces', 'districts.province_id', 'provinces.id')
             ->when(!empty($keyword), function ($query) use ($keyword) {
-                return $query->where('districts.district', 'like', '%' . $keyword . '%');
+                return $query->where('provinces.province', 'like', '%' . $keyword . '%');
             })
-            ->when(!empty($districtId), function ($query) use ($districtId) {
-                return $query->where('districts.uuid', $districtId);
-            })
+
             ->when(!empty($provinceId), function ($query) use ($provinceId) {
                 return $query->where('provinces.uuid', $provinceId);
             })
@@ -79,7 +59,7 @@ class DistrictsController extends Controller
 
     }
 
-    public function setDistrict(Request $request){
+    public function setProvince(Request $request){
         $out = [];
 
         APIValidator::validate($request, [
@@ -87,18 +67,18 @@ class DistrictsController extends Controller
             'district' => ['required', 'max:500'],
         ]);
 
-        if (!empty($request->district_id)){
-            $save = Districts::where('uuid', $request->district_id)->first();
+        if (!empty($request->province_id)){
+            $save = Provinces::where('uuid', $request->province_id)->first();
         }else{
 
             $province = Provinces::where('uuid', $request->province_id)->first();
 
-            $save = new Districts();
+            $save = new Provinces();
             $save->province_id = $province->id;
             $save->status = 1;
         }
 
-        $save->district = !empty($request->district) ? $request->district : null;
+        $save->location = !empty($request->location) ? $request->location : null;
 
         $save->save();
 
@@ -106,24 +86,19 @@ class DistrictsController extends Controller
         if (empty($save->uuid)){
             $getCommon = new CommonHelper();
             $uuId = $getCommon->generateUUId($this->screen, $save->id);
-            $tProperty = Districts::find($save->id);
+            $tProperty = Provinces::find($save->id);
             $tProperty->uuid = $uuId;
             $tProperty->save();
         }
 
+        $getProvinces = Provinces::find($save->id);
 
-        $out = [
-            'status' => 'success',
-            'message_title' => 'Success!',
-            'message_text' => 'Status Has Been Changed!',
-        ];
-
-        return response()->json($out);
+        return response()->json($getProvinces);
     }
 
     public function setStatus(Request $request){
         $out = [];
-        $save = Districts::where('uuid', $request->id)->first();
+        $save = Provinces::where('uuid', $request->id)->first();
         $updatedStatus = 1;
 
         if (!empty($save->status)){
