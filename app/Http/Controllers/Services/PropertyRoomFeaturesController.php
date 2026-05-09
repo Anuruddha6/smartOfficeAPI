@@ -23,6 +23,7 @@ class PropertyRoomFeaturesController extends Controller
         $propertyRoomFeatureId = !empty($request->property_room_feature_id) ? $request->property_room_feature_id : 0;
         $propertyRoomId = !empty($request->property_room_id) ? $request->property_room_id : 0;
         $status = !empty($request->status) ? $request->status : 1;
+        $isIgnoreStatus = !empty($request->is_ignore_status) ? $request->is_ignore_status : 0;
 
 
         $out = PropertyRoomFeatures::select(
@@ -40,7 +41,9 @@ class PropertyRoomFeaturesController extends Controller
             ->when(!empty($propertyRoomId), function ($query) use ($propertyRoomId) {
                 return $query->where('property_rooms.uuid', $propertyRoomId);
             })
-            ->where('property_room_features.status', $status)
+            ->when(empty($isIgnoreStatus), function ($query) use ($status) {
+                return $query->where('property_room_features.status', $status);
+            })
             ->where('property_rooms.status', $status)
             ->where('properties.status', $status)
             ->orderBy('id', 'ASC')
@@ -72,7 +75,6 @@ class PropertyRoomFeaturesController extends Controller
             ->when(!empty($propertyRoomId), function ($query) use ($propertyRoomId) {
                 return $query->where('property_rooms.uuid', $propertyRoomId);
             })
-            ->where('property_room_features.status', $status)
             ->where('property_rooms.status', $status)
             ->where('properties.status', $status)
             ->first();
@@ -117,5 +119,27 @@ class PropertyRoomFeaturesController extends Controller
         $getPropertyRoomFeature = PropertyRoomFeatures::find($save->id);
 
         return response()->json($getPropertyRoomFeature);
+    }
+
+    public function setStatus(Request $request){
+        $out = [];
+        $save = PropertyRoomFeatures::where('uuid', $request->id)->first();
+        $updatedStatus = 1;
+
+        if (!empty($save->status)){
+            $updatedStatus = 0;
+        }
+        $save->status = $updatedStatus;
+        $save->save();
+
+
+        $out = [
+            'updated_status' => $updatedStatus,
+            'status' => 'success',
+            'message_title' => 'Success!',
+            'message_text' => 'Status Has Been Changed!',
+        ];
+
+        return response()->json($out);
     }
 }

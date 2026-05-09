@@ -12,7 +12,7 @@ class UserRolesController extends Controller
 {
     private $screen = 'user_roles';
 
-    public function getUserStasuses(Request $request){
+    public function getUserRoles(Request $request){
         $out = [];
 
         $itemsPerPage = !empty($request->items_per_page) ? $request->items_per_page : $this->defaultItemsPerPage;
@@ -21,6 +21,7 @@ class UserRolesController extends Controller
         $keyword = !empty($request->keyword) ? $request->keyword : '';
         $userRoleId = !empty($request->user_role_id) ? $request->user_role_id : 0;
         $status = !empty($request->status) ? $request->status : 1;
+        $isIgnoreStatus = !empty($request->is_ignore_status) ? $request->is_ignore_status : 0;
 
 
         $out = UserRoles::select(
@@ -34,19 +35,19 @@ class UserRolesController extends Controller
             ->when(!empty($userRoleId), function ($query) use ($userRoleId) {
                 return $query->where('user_roles.uuid', $userRoleId);
             })
-
-            ->where('user_roles.status', $status)
+            ->when(empty($isIgnoreStatus), function ($query) use ($status) {
+                return $query->where('user_roles.status', $status);
+            })
             ->orderBy('id', 'ASC')
             ->paginate($itemsPerPage, ['*'], 'page', $currentPage);
 
         return response()->json($out);
     }
 
-    public function getUserStasuse(Request $request){
+    public function getUserRole(Request $request){
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
         $userRoleId = !empty($request->user_role_id) ? $request->user_role_id : 0;
-        $status = !empty($request->status) ? $request->status : 1;
 
 
         $out = UserRoles::select(
@@ -60,20 +61,18 @@ class UserRolesController extends Controller
             ->when(!empty($userRoleId), function ($query) use ($userRoleId) {
                 return $query->where('user_roles.uuid', $userRoleId);
             })
-
-            ->where('user_roles.status', $status)
             ->first();
 
         return response()->json($out);
 
     }
 
-    public function setUserStasuse(Request $request){
+    public function setUserRole(Request $request){
         $out = [];
 
-        APIValidator::validate($request, [
-            'users_status' => ['required', 'max:500'],
-            'display_name' => ['required', 'max:500'],
+        $validated = $request->validate([
+            'user_role' => 'required',
+            'display_name' => 'required',
         ]);
 
         if (!empty($request->user_role_id)){
@@ -98,8 +97,34 @@ class UserRolesController extends Controller
             $update->save();
         }
 
-        $getUserRole = UserRoles::find($save->id);
+        $out = [
+            'status' => 'success',
+            'message_title' => 'Success!',
+            'message_text' => 'User Role Has Been Saved!',
+        ];
 
-        return response()->json($getUserRole);
+        return response()->json($out);
+    }
+
+    public function setStatus(Request $request){
+        $out = [];
+        $save = UserRoles::where('uuid', $request->id)->first();
+        $updatedStatus = 1;
+
+        if (!empty($save->status)){
+            $updatedStatus = 0;
+        }
+        $save->status = $updatedStatus;
+        $save->save();
+
+
+        $out = [
+            'updated_status' => $updatedStatus,
+            'status' => 'success',
+            'message_title' => 'Success!',
+            'message_text' => 'Status Has Been Changed!',
+        ];
+
+        return response()->json($out);
     }
 }

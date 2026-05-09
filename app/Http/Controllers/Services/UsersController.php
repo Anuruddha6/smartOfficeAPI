@@ -6,6 +6,8 @@ use App\Helpers\CommonHelper;
 use App\Helpers\DBHelper;
 use App\Http\Controllers\Controller;
 use App\Mail\WelcomeMail;
+use App\Models\Districts;
+use App\Models\Provinces;
 use App\Models\User;
 use App\Models\UserRoles;
 use App\Validator\APIValidator;
@@ -33,6 +35,7 @@ class UsersController extends Controller
         $userRoleId = !empty($request->user_role_id) ? $request->user_role_id : 0;
         $isDeletedOnly = !empty($request->is_deleted) ? $request->is_deleted : 0;
         $status = !empty($request->status) ? $request->status : 1;
+        $isIgnoreStatus = !empty($request->is_ignore_status) ? $request->is_ignore_status : 0;
 
         $out = User::select(
             'users.*',
@@ -59,7 +62,9 @@ class UsersController extends Controller
             }, function ($query) use ($request){
                 return $query->where('users.is_deleted', 0);
             })
-            ->where('users.status', $status)
+            ->when(empty($isIgnoreStatus), function ($query) use ($status) {
+                return $query->where('users.status', $status);
+            })
             ->orderBy('id', 'ASC')
             ->paginate($itemsPerPage, ['*'], 'page', $currentPage);
 
@@ -103,7 +108,6 @@ class UsersController extends Controller
             }, function ($query) use ($request){
                 return $query->where('users.is_deleted', 0);
             })
-            ->where('users.status', $status)
             ->first();
 
         return response()->json($out);
@@ -113,12 +117,21 @@ class UsersController extends Controller
     public function setUser(Request $request){
         $out = [];
 
-        APIValidator::validate($request, [
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        if (!empty($request->user_id)){
+            APIValidator::validate($request, [
+                'first_name' => ['required', 'string', 'max:255'],
+                'last_name' => ['required', 'string', 'max:255'],
+            ]);
+        }
+        else{
+            APIValidator::validate($request, [
+                'first_name' => ['required', 'string', 'max:255'],
+                'last_name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+                'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            ]);
+        }
+
 
         $isNewUser = 0;
         if (!empty($request->user_id)){
@@ -134,9 +147,30 @@ class UsersController extends Controller
             $user->email = $request->email;
         }
 
+
+        $getDistrictId = !empty($request->district_id) ? $request->district_id : 0;
+
+        $provinceId = 0;
+        $districtId = 0;
+        if (!empty($getDistrictId)){
+            $d = Districts::where('uuid', $getDistrictId)->first();
+            $districtId = $d->id;
+            $provinceId = $d->province_id;
+        }
+
+
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
-        $user->user_role_id  = !empty($request->user_role_id) ? $request->user_role_id : 3;
+        $user->user_role_id  = !empty($request->user_role_id) ? $request->user_role_id : 4;
+        $user->phone_1  = !empty($request->phone_1) ? $request->phone_1 : null;
+        $user->phone_2  = !empty($request->phone_2) ? $request->phone_2 : null;
+        $user->street_address  = !empty($request->street_address) ? $request->street_address : null;
+        $user->address_2  = !empty($request->address_2) ? $request->address_2 : null;
+        $user->town  = !empty($request->town) ? $request->town : null;
+        $user->city  = !empty($request->city) ? $request->city : null;
+        $user->province_id  = $provinceId;
+        $user->district_id  = $districtId;
+        $user->image  = !empty($request->image) ? $request->image : "user.png";
 
         $user->save();
 
@@ -159,14 +193,16 @@ class UsersController extends Controller
 
         $getUser = User::find($user->id);
 
+        if (!empty($isNewUser)){
+            $url = url('/user/verify-email/' . $getUser->uuid);
+            $mailData = [
+                'email_subject' => 'Thank you for registering with Smart Office.',
+                'url' => $url,
+            ];
 
-        $url = url('/user/verify-email/' . $getUser->uuid);
-        $mailData = [
-            'email_subject' => 'Thank you for registering with Smart Office.',
-            'url' => $url,
-        ];
+            Mail::to($getUser->email)->send(new WelcomeMail($mailData));
+        }
 
-        Mail::to($getUser->email)->send(new WelcomeMail($mailData));
 
         return response()->json($getUser);
     }
@@ -212,4 +248,73 @@ class UsersController extends Controller
 
         return response()->json($out);
     }
+
+    public function getDetailsForUserCreations(Request $request){
+
+        $out = [];
+
+        if (!empty($request->user_roles)){
+            $userRoles = UserRoles::where('status', 1)->get();
+            $out['user_roles'] = $userRoles;
+        }
+
+        if (!empty($request->provinces)){
+            $provinces = Provinces::where('status', 1)->get();
+            $out['provinces'] = $provinces;
+        }
+
+        return response()->json($out);
+
+    }
+
+    public function getDetailsForUserEdit(Request $request){
+
+        $out = [];
+
+        if (!empty($request->user_id)){
+            $user = User::where('uuid', $request->user_id)->first();
+            $out['user'] = $user;
+        }
+
+        if (!empty($request->user_roles)){
+            $userRoles = UserRoles::where('status', 1)->get();
+            $out['user_roles'] = $userRoles;
+        }
+
+        if (!empty($request->provinces)){
+            $provinces = Provinces::where('status', 1)->get();
+            $out['provinces'] = $provinces;
+        }
+
+        if (!empty($request->districts)){
+            $districts = Districts::where('status', 1)->get();
+            $out['districts'] = $districts;
+        }
+
+        return response()->json($out);
+
+    }
+
+    public function setStatus(Request $request){
+        $out = [];
+        $save = User::where('uuid', $request->id)->first();
+        $updatedStatus = 1;
+
+        if (!empty($save->status)){
+            $updatedStatus = 0;
+        }
+        $save->status = $updatedStatus;
+        $save->save();
+
+
+        $out = [
+            'updated_status' => $updatedStatus,
+            'status' => 'success',
+            'message_title' => 'Success!',
+            'message_text' => 'Status Has Been Changed!',
+        ];
+
+        return response()->json($out);
+    }
+
 }

@@ -74,6 +74,7 @@ class PropertyRoomsController extends Controller
         $propertyRoomId = !empty($request->property_room_id) ? $request->property_room_id : 0;
         $propertyId = !empty($request->property_id) ? $request->property_id : 0;
         $status = !empty($request->status) ? $request->status : 1;
+        $isIgnoreStatus = !empty($request->is_ignore_status) ? $request->is_ignore_status : 0;
         $isDeleted = !empty($request->is_deleted) ? $request->is_deleted : 0;
 
 
@@ -110,8 +111,9 @@ class PropertyRoomsController extends Controller
             ->when(!empty($propertyId), function ($query) use ($propertyId) {
                 return $query->where('properties.uuid', $propertyId);
             })
-            ->where('property_rooms.status', $status)
-            ->where('properties.status', $status)
+            ->when(empty($isIgnoreStatus), function ($query) use ($status) {
+                return $query->where('property_rooms.status', $status);
+            })
             ->first();
 
         return response()->json($out);
@@ -160,5 +162,27 @@ class PropertyRoomsController extends Controller
         $getPropertyRoom = PropertyRooms::find($save->id);
 
         return response()->json($getPropertyRoom);
+    }
+
+    public function setStatus(Request $request){
+        $out = [];
+        $save = PropertyRooms::where('uuid', $request->id)->first();
+        $updatedStatus = 1;
+
+        if (!empty($save->status)){
+            $updatedStatus = 0;
+        }
+        $save->status = $updatedStatus;
+        $save->save();
+
+
+        $out = [
+            'updated_status' => $updatedStatus,
+            'status' => 'success',
+            'message_title' => 'Success!',
+            'message_text' => 'Status Has Been Changed!',
+        ];
+
+        return response()->json($out);
     }
 }

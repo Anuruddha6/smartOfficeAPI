@@ -21,6 +21,7 @@ class PaymentMethodsController extends Controller
         $keyword = !empty($request->keyword) ? $request->keyword : '';
         $paymentMethodId = !empty($request->payment_method_id) ? $request->payment_method_id : 0;
         $status = !empty($request->status) ? $request->status : 1;
+        $isIgnoreStatus = !empty($request->is_ignore_status) ? $request->is_ignore_status : 0;
 
 
         $out = PaymentMethods::select(
@@ -33,8 +34,9 @@ class PaymentMethodsController extends Controller
             ->when(!empty($paymentMethodId), function ($query) use ($paymentMethodId) {
                 return $query->where('payment_methods.uuid', $paymentMethodId);
             })
-
-            ->where('payment_methods.status', $status)
+            ->when(empty($isIgnoreStatus), function ($query) use ($status) {
+                return $query->where('payment_methods.status', $status);
+            })
             ->orderBy('id', 'ASC')
             ->paginate($itemsPerPage, ['*'], 'page', $currentPage);
 
@@ -59,7 +61,6 @@ class PaymentMethodsController extends Controller
                 return $query->where('payment_methods.uuid', $paymentMethodId);
             })
 
-            ->where('payment_methods.status', $status)
             ->first();
 
         return response()->json($out);
@@ -98,5 +99,27 @@ class PaymentMethodsController extends Controller
         $getPaymentMethod = PaymentMethods::find($save->id);
 
         return response()->json($getPaymentMethod);
+    }
+
+    public function setStatus(Request $request){
+        $out = [];
+        $save = PaymentMethods::where('uuid', $request->id)->first();
+        $updatedStatus = 1;
+
+        if (!empty($save->status)){
+            $updatedStatus = 0;
+        }
+        $save->status = $updatedStatus;
+        $save->save();
+
+
+        $out = [
+            'updated_status' => $updatedStatus,
+            'status' => 'success',
+            'message_title' => 'Success!',
+            'message_text' => 'Status Has Been Changed!',
+        ];
+
+        return response()->json($out);
     }
 }
