@@ -28,6 +28,7 @@ class UsersController extends Controller
 
         $itemsPerPage = !empty($request->items_per_page) ? $request->items_per_page : $this->defaultItemsPerPage;
         $currentPage = !empty($request->current_page) ? $request->current_page : 0;
+        $mode = !empty($request->mode) ? $request->mode : null;
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
         $userId = !empty($request->user_id) ? $request->user_id : 0;
@@ -37,7 +38,7 @@ class UsersController extends Controller
         $status = !empty($request->status) ? $request->status : 1;
         $isIgnoreStatus = !empty($request->is_ignore_status) ? $request->is_ignore_status : 0;
 
-        $out = User::select(
+        $get = User::select(
             'users.*',
             'user_roles.user_role',
             'user_roles.display_name AS user_role_display_name',
@@ -65,8 +66,13 @@ class UsersController extends Controller
             ->when(empty($isIgnoreStatus), function ($query) use ($status) {
                 return $query->where('users.status', $status);
             })
-            ->orderBy('id', 'ASC')
-            ->paginate($itemsPerPage, ['*'], 'page', $currentPage);
+            ->orderBy('id', 'ASC');
+
+        if (!empty($mode) && $mode == 'for_select') {
+            $out = $get->get();
+        } else {
+            $out = $get->paginate($itemsPerPage, ['*'], 'page', $currentPage);
+        }
 
         return response()->json($out);
     }

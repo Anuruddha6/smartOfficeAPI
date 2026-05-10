@@ -17,6 +17,10 @@ class DistrictsController extends Controller
     public function getDistricts(Request $request){
         $out = [];
 
+        $itemsPerPage = !empty($request->items_per_page) ? $request->items_per_page : $this->defaultItemsPerPage;
+        $currentPage = !empty($request->current_page) ? $request->current_page : 0;
+        $mode = !empty($request->mode) ? $request->mode : null;
+
         $keyword = !empty($request->keyword) ? $request->keyword : '';
         $districtId = !empty($request->district_id) ? $request->district_id : 0;
         $provinceId = !empty($request->province_id) ? $request->province_id : 0;
@@ -24,11 +28,9 @@ class DistrictsController extends Controller
         $isIgnoreStatus = !empty($request->is_ignore_status) ? $request->is_ignore_status : 0;
 
 
-        $out = Districts::select(
+        $get = Districts::select(
             'districts.*',
             'provinces.province',
-
-
         )
             ->join('provinces', 'districts.province_id', 'provinces.id')
             ->when(!empty($keyword), function ($query) use ($keyword) {
@@ -44,8 +46,13 @@ class DistrictsController extends Controller
                 return $query->where('districts.status', $status);
             })
             ->where('provinces.status', $status)
-            ->orderBy('id', 'ASC')
-            ->get();
+            ->orderBy('id', 'ASC');
+
+        if (!empty($mode) && $mode == 'for_select') {
+            $out = $get->get();
+        } else {
+            $out = $get->paginate($itemsPerPage, ['*'], 'page', $currentPage);
+        }
 
         return response()->json($out);
     }
@@ -115,7 +122,7 @@ class DistrictsController extends Controller
         $out = [
             'status' => 'success',
             'message_title' => 'Success!',
-            'message_text' => 'Status Has Been Changed!',
+            'message_text' => 'District Has Been updated!',
         ];
 
         return response()->json($out);

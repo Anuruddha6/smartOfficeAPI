@@ -18,6 +18,7 @@ class PropertyRoomsController extends Controller
 
         $itemsPerPage = !empty($request->items_per_page) ? $request->items_per_page : $this->defaultItemsPerPage;
         $currentPage = !empty($request->current_page) ? $request->current_page : 0;
+        $mode = !empty($request->mode) ? $request->mode : null;
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
         $propertyRoomId = !empty($request->property_room_id) ? $request->property_room_id : 0;
@@ -26,7 +27,7 @@ class PropertyRoomsController extends Controller
         $isDeleted = !empty($request->is_deleted) ? $request->is_deleted : 0;
 
 
-        $out = PropertyRooms::select(
+        $get = PropertyRooms::select(
             'property_rooms.*',
 
         )
@@ -62,8 +63,13 @@ class PropertyRoomsController extends Controller
 
             ->where('property_rooms.status', $status)
             ->where('properties.status', $status)
-            ->orderBy('id', 'ASC')
-            ->paginate($itemsPerPage, ['*'], 'page', $currentPage);
+            ->orderBy('id', 'ASC');
+
+        if (!empty($mode) && $mode == 'for_select') {
+            $out = $get->get();
+        } else {
+            $out = $get->paginate($itemsPerPage, ['*'], 'page', $currentPage);
+        }
 
         return response()->json($out);
     }

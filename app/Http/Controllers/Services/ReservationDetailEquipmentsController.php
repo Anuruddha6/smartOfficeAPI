@@ -20,6 +20,7 @@ class ReservationDetailEquipmentsController extends Controller
 
         $itemsPerPage = !empty($request->items_per_page) ? $request->items_per_page : $this->defaultItemsPerPage;
         $currentPage = !empty($request->current_page) ? $request->current_page : 0;
+        $mode = !empty($request->mode) ? $request->mode : null;
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
         $reservationDetailEquipmentId = !empty($request->reservation_detail_equipment_id) ? $request->reservation_detail_equipment_id : 0;
@@ -28,7 +29,7 @@ class ReservationDetailEquipmentsController extends Controller
         $status = !empty($request->status) ? $request->status : 1;
         $isIgnoreStatus = !empty($request->is_ignore_status) ? $request->is_ignore_status : 0;
 
-        $out = ReservationDetailEquipments::select(
+        $get = ReservationDetailEquipments::select(
             'reservation_detail_equipments.*',
             'property_room_equipments.equipment',
 
@@ -50,8 +51,13 @@ class ReservationDetailEquipmentsController extends Controller
             ->when(empty($isIgnoreStatus), function ($query) use ($status) {
                 return $query->where('property_room_equipments.status', $status);
             })
-            ->orderBy('id', 'ASC')
-            ->paginate($itemsPerPage, ['*'], 'page', $currentPage);
+            ->orderBy('id', 'ASC');
+
+        if (!empty($mode) && $mode == 'for_select') {
+            $out = $get->get();
+        } else {
+            $out = $get->paginate($itemsPerPage, ['*'], 'page', $currentPage);
+        }
 
         return response()->json($out);
     }

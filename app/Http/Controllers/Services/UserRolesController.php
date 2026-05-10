@@ -17,6 +17,7 @@ class UserRolesController extends Controller
 
         $itemsPerPage = !empty($request->items_per_page) ? $request->items_per_page : $this->defaultItemsPerPage;
         $currentPage = !empty($request->current_page) ? $request->current_page : 0;
+        $mode = !empty($request->mode) ? $request->mode : null;
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
         $userRoleId = !empty($request->user_role_id) ? $request->user_role_id : 0;
@@ -24,7 +25,7 @@ class UserRolesController extends Controller
         $isIgnoreStatus = !empty($request->is_ignore_status) ? $request->is_ignore_status : 0;
 
 
-        $out = UserRoles::select(
+        $get = UserRoles::select(
             'user_roles.*',
 
         )
@@ -38,8 +39,15 @@ class UserRolesController extends Controller
             ->when(empty($isIgnoreStatus), function ($query) use ($status) {
                 return $query->where('user_roles.status', $status);
             })
-            ->orderBy('id', 'ASC')
-            ->paginate($itemsPerPage, ['*'], 'page', $currentPage);
+            ->orderBy('id', 'ASC');
+
+        if (!empty($mode) && $mode == 'for_select') {
+            $out = $get->get();
+        } else {
+            $out = $get->paginate($itemsPerPage, ['*'], 'page', $currentPage);
+        }
+
+
 
         return response()->json($out);
     }

@@ -19,6 +19,7 @@ class PropertiesController extends Controller
 
         $itemsPerPage = !empty($request->items_per_page) ? $request->items_per_page : $this->defaultItemsPerPage;
         $currentPage = !empty($request->current_page) ? $request->current_page : 0;
+        $mode = !empty($request->mode) ? $request->mode : null;
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
         $propertyId = !empty($request->property_id) ? $request->property_id : 0;
@@ -28,7 +29,7 @@ class PropertiesController extends Controller
         $isDeleted = !empty($request->is_deleted) ? $request->is_deleted : 0;
         $isVerified = !empty($request->is_verified) ? $request->is_verified : 1;
 
-        $out = Properties::select(
+        $get = Properties::select(
             'properties.*',
             'locations.location',
             'districts.district',
@@ -83,8 +84,13 @@ class PropertiesController extends Controller
             ->when(empty($isIgnoreStatus), function ($query) use ($status) {
                 return $query->where('properties.status', $status);
             })
-            ->orderBy('id', 'ASC')
-            ->paginate($itemsPerPage, ['*'], 'page', $currentPage);
+            ->orderBy('id', 'ASC');
+
+        if (!empty($mode) && $mode == 'for_select') {
+            $out = $get->get();
+        } else {
+            $out = $get->paginate($itemsPerPage, ['*'], 'page', $currentPage);
+        }
 
         return response()->json($out);
     }

@@ -18,6 +18,7 @@ class LocationsController extends Controller
 
         $itemsPerPage = !empty($request->items_per_page) ? $request->items_per_page : $this->defaultItemsPerPage;
         $currentPage = !empty($request->current_page) ? $request->current_page : 0;
+        $mode = !empty($request->mode) ? $request->mode : null;
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
         $locationId = !empty($request->location_id) ? $request->location_id : 0;
@@ -26,9 +27,10 @@ class LocationsController extends Controller
         $isIgnoreStatus = !empty($request->is_ignore_status) ? $request->is_ignore_status : 0;
 
 
-        $out = Locations::select(
+        $get = Locations::select(
             'locations.*',
-
+            'districts.district',
+            'provinces.province',
         )
             ->join('districts', 'locations.district_id', 'districts.id')
             ->join('provinces', 'districts.province_id', 'provinces.id')
@@ -46,8 +48,13 @@ class LocationsController extends Controller
             })
             ->where('districts.status', $status)
             ->where('provinces.status', $status)
-            ->orderBy('id', 'ASC')
-            ->paginate($itemsPerPage, ['*'], 'page', $currentPage);
+            ->orderBy('id', 'ASC');
+
+        if (!empty($mode) && $mode == 'for_select') {
+            $out = $get->get();
+        } else {
+            $out = $get->paginate($itemsPerPage, ['*'], 'page', $currentPage);
+        }
 
         return response()->json($out);
     }
@@ -62,7 +69,6 @@ class LocationsController extends Controller
 
         $out = Locations::select(
             'locations.*',
-
         )
             ->join('districts', 'locations.district_id', 'districts.id')
             ->join('provinces', 'districts.province_id', 'provinces.id')
@@ -117,7 +123,13 @@ class LocationsController extends Controller
 
         $getLocation = Locations::find($save->id);
 
-        return response()->json($getLocation);
+        $out = [
+            'status' => 'success',
+            'message_title' => 'Success!',
+            'message_text' => 'Location Has Been updated!',
+        ];
+
+        return response()->json($out);
     }
 
     public function setStatus(Request $request){

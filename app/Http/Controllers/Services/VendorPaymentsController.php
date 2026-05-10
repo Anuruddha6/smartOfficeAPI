@@ -21,6 +21,7 @@ class VendorPaymentsController extends Controller
 
         $itemsPerPage = !empty($request->items_per_page) ? $request->items_per_page : $this->defaultItemsPerPage;
         $currentPage = !empty($request->current_page) ? $request->current_page : 0;
+        $mode = !empty($request->mode) ? $request->mode : null;
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
         $vendorPaymentId = !empty($request->vendor_payment_id) ? $request->vendor_payment_id : 0;
@@ -32,7 +33,7 @@ class VendorPaymentsController extends Controller
         $status = !empty($request->status) ? $request->status : 1;
 
 
-        $out = VendorPayments::select(
+        $get = VendorPayments::select(
             'vendor_payments.*',
 
         )
@@ -50,8 +51,13 @@ class VendorPaymentsController extends Controller
                 return $query->where('users.uuid', $vendorId);
             })
             ->where('vendor_payments.status', $status)
-            ->orderBy('id', 'DESC')
-            ->paginate($itemsPerPage, ['*'], 'page', $currentPage);
+            ->orderBy('id', 'DESC');
+
+        if (!empty($mode) && $mode == 'for_select') {
+            $out = $get->get();
+        } else {
+            $out = $get->paginate($itemsPerPage, ['*'], 'page', $currentPage);
+        }
 
         return response()->json($out);
     }

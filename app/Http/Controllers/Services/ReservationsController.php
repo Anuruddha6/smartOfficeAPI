@@ -19,6 +19,7 @@ class ReservationsController extends Controller
         //Search
         $itemsPerPage = !empty($request->items_per_page) ? $request->items_per_page : $this->defaultItemsPerPage;
         $currentPage = !empty($request->current_page) ? $request->current_page : 0;
+        $mode = !empty($request->mode) ? $request->mode : null;
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
         $reservationId = !empty($request->reservation_id) ? $request->reservation_id : 0;
@@ -26,7 +27,7 @@ class ReservationsController extends Controller
         $reservationStatusId = !empty($request->reservation_status_id) ? $request->reservation_status_id : 0;
 
 
-        $out = Reservations::select(
+        $get = Reservations::select(
             'reservations.*',
 
         )
@@ -57,8 +58,13 @@ class ReservationsController extends Controller
                 return $query->where('reservations.reservation_status_id', $reservationStatusId);
             })
 
-            ->orderBy('id', 'DESC')
-            ->paginate($itemsPerPage, ['*'], 'page', $currentPage);
+            ->orderBy('id', 'DESC');
+
+        if (!empty($mode) && $mode == 'for_select') {
+            $out = $get->get();
+        } else {
+            $out = $get->paginate($itemsPerPage, ['*'], 'page', $currentPage);
+        }
 
         return response()->json($out);
     }

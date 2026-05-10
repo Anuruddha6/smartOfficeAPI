@@ -17,6 +17,7 @@ class PaymentMethodsController extends Controller
 
         $itemsPerPage = !empty($request->items_per_page) ? $request->items_per_page : $this->defaultItemsPerPage;
         $currentPage = !empty($request->current_page) ? $request->current_page : 0;
+        $mode = !empty($request->mode) ? $request->mode : null;
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
         $paymentMethodId = !empty($request->payment_method_id) ? $request->payment_method_id : 0;
@@ -24,7 +25,7 @@ class PaymentMethodsController extends Controller
         $isIgnoreStatus = !empty($request->is_ignore_status) ? $request->is_ignore_status : 0;
 
 
-        $out = PaymentMethods::select(
+        $get = PaymentMethods::select(
             'payment_methods.*',
 
         )
@@ -37,8 +38,13 @@ class PaymentMethodsController extends Controller
             ->when(empty($isIgnoreStatus), function ($query) use ($status) {
                 return $query->where('payment_methods.status', $status);
             })
-            ->orderBy('id', 'ASC')
-            ->paginate($itemsPerPage, ['*'], 'page', $currentPage);
+            ->orderBy('id', 'ASC');
+
+        if (!empty($mode) && $mode == 'for_select') {
+            $out = $get->get();
+        } else {
+            $out = $get->paginate($itemsPerPage, ['*'], 'page', $currentPage);
+        }
 
         return response()->json($out);
     }
@@ -96,9 +102,13 @@ class PaymentMethodsController extends Controller
             $tProperty->save();
         }
 
-        $getPaymentMethod = PaymentMethods::find($save->id);
+        $out = [
+            'status' => 'success',
+            'message_title' => 'Success!',
+            'message_text' => 'Payment Method Has Been updated!',
+        ];
 
-        return response()->json($getPaymentMethod);
+        return response()->json($out);
     }
 
     public function setStatus(Request $request){
