@@ -74,14 +74,17 @@ class ProvincesController extends Controller
     public function setProvince(Request $request){
         $out = [];
 
-        APIValidator::validate($request, [
-            'province_id' => ['required'],
-            'district' => ['required', 'max:500'],
-        ]);
-
         if (!empty($request->province_id)){
+            $validated = $request->validate([
+                'province_id' => 'required',
+                'province' => 'required|unique:provinces,province,' . $request->province_id . ',uuid',
+            ]);
+
             $save = Provinces::where('uuid', $request->province_id)->first();
         }else{
+            $validated = $request->validate([
+                'province' => 'required|unique:provinces',
+            ]);
 
             $province = Provinces::where('uuid', $request->province_id)->first();
 

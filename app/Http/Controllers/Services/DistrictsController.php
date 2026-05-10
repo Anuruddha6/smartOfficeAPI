@@ -89,14 +89,19 @@ class DistrictsController extends Controller
     public function setDistrict(Request $request){
         $out = [];
 
-        APIValidator::validate($request, [
-            'province_id' => ['required'],
-            'district' => ['required', 'max:500'],
-        ]);
-
         if (!empty($request->district_id)){
+            $validated = $request->validate([
+                'province_id' => 'required',
+                'district_id' => 'required',
+                'district' => 'required|unique:districts,district,' . $request->district_id . ',uuid',
+            ]);
             $save = Districts::where('uuid', $request->district_id)->first();
         }else{
+
+            $validated = $request->validate([
+                'province_id' => 'required',
+                'district' => 'required|unique:districts',
+            ]);
 
             $province = Provinces::where('uuid', $request->province_id)->first();
 

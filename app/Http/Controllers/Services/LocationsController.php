@@ -92,14 +92,20 @@ class LocationsController extends Controller
     public function setLocation(Request $request){
         $out = [];
 
-        APIValidator::validate($request, [
-            'district_id' => ['required'],
-            'location' => ['required', 'max:500'],
-        ]);
 
         if (!empty($request->location_id)){
+            $validated = $request->validate([
+                'district_id' => 'required',
+                'location_id' => 'required',
+                'location' => 'required|unique:locations,location,' . $request->location_id . ',uuid',
+            ]);
             $save = Locations::where('uuid', $request->location_id)->first();
         }else{
+
+            $validated = $request->validate([
+                'district_id' => 'required',
+                'location' => 'required|unique:locations',
+            ]);
 
             $save = new Locations();
             $save->status = 1;
