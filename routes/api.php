@@ -179,7 +179,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('ReservationRefundTypes')->group(function (){
         Route::post('/getReservationRefundTypes', [ReservationRefundTypesController::class, 'getReservationRefundTypes'])->name('ReservationRefundTypes.getReservationRefundTypes');
         Route::post('/getReservationRefundType', [ReservationRefundTypesController::class, 'getReservationRefundType'])->name('ReservationRefundType.getReservationRefundType');
-        Route::post('/setReservationRefundType', [ReservationRefundTypesController::class, 'setReservationRefundType'])->name('setReservationRefundType.setReservationRefundType');
+        Route::post('/setReservationRefundType', [ReservationRefundTypesController::class, 'setReservationRefundType'])->name('ReservationRefundTypes.setReservationRefundType');
+        Route::post('/setStatus', [ReservationRefundTypesController::class, 'setStatus'])->name('ReservationRefundTypes.setStatus');
     });
 
     // U
