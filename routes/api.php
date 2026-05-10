@@ -29,6 +29,7 @@ use App\Http\Controllers\Services\ReservationDetailsController;
 use App\Http\Controllers\Services\ReservationDetailEquipmentsController;
 use App\Http\Controllers\Services\ReservationStatusesController;
 use App\Http\Controllers\Services\ReservationTypesController;
+use App\Http\Controllers\Services\ReservationRefundTypesController;
 
 //U
 use App\Http\Controllers\Services\UsersController;
@@ -171,6 +172,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/getReservationTypes', [ReservationTypesController::class, 'getReservationTypes'])->name('ReservationTypes.getReservationTypes');
         Route::post('/getReservationType', [ReservationTypesController::class, 'getReservationType'])->name('ReservationType.getReservationType');
         Route::post('/setReservationType', [ReservationTypesController::class, 'setReservationType'])->name('ReservationType.setReservationType');
+    });
+
+    Route::prefix('ReservationRefundTypes')->group(function (){
+        Route::post('/getReservationRefundTypes', [ReservationRefundTypesController::class, 'getReservationRefundTypes'])->name('ReservationRefundTypes.getReservationRefundTypes');
+        Route::post('/getReservationRefundType', [ReservationRefundTypesController::class, 'getReservationRefundType'])->name('ReservationRefundType.getReservationRefundType');
+        Route::post('/setReservationRefundType', [ReservationRefundTypesController::class, 'setReservationRefundType'])->name('setReservationRefundType.setReservationRefundType');
     });
 
     // U
