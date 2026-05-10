@@ -35,7 +35,7 @@ class LocationsController extends Controller
             ->join('districts', 'locations.district_id', 'districts.id')
             ->join('provinces', 'districts.province_id', 'provinces.id')
             ->when(!empty($keyword), function ($query) use ($keyword) {
-                return $query->where('locations.location', 'like', '%' . $keyword . '%');
+                return $query->where('locations.location', 'like', '%' . $keyword . '%')->orWhere('districts.district', 'like', '%' . $keyword . '%');
             })
             ->when(!empty($locationId), function ($query) use ($locationId) {
                 return $query->where('locations.uuid', $locationId);
