@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Services;
 
 use App\Http\Controllers\Controller;
+use App\Models\Districts;
+use App\Models\Locations;
 use App\Models\Properties;
+use App\Models\Provinces;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Helpers\CommonHelper;
-use App\Helpers\DBHelper;
 use App\Validator\APIValidator;
 
 class PropertiesController extends Controller
@@ -76,15 +78,10 @@ class PropertiesController extends Controller
             }, function ($query) use ($request){
                 return $query->where('properties.is_deleted', 0);
             })
-            ->when(!empty($isVerified), function ($query) use ($isVerified) {
-                return $query->where('properties.is_verified', 1);
-            }, function ($query) use ($request){
-                return $query->where('properties.is_verified', 0);
-            })
             ->when(empty($isIgnoreStatus), function ($query) use ($status) {
                 return $query->where('properties.status', $status);
             })
-            ->orderBy('id', 'ASC');
+            ->orderBy('id', 'DESC');
 
         if (!empty($mode) && $mode == 'for_select') {
             $out = $get->get();
@@ -186,8 +183,9 @@ class PropertiesController extends Controller
             $save->status = 1;
         }
 
+        $location = Locations::where('uuid', $request->location_id)->first();
 
-        $save->location_id = !empty($request->location_id) ? $request->location_id : 0;
+        $save->location_id = $location->id;
         $save->name = !empty($request->name) ? $request->name : null;
         $save->phone_1 = !empty($request->phone_1) ? $request->phone_1 : null;
         $save->phone_2 = !empty($request->phone_2) ? $request->phone_2 : null;
@@ -233,6 +231,74 @@ class PropertiesController extends Controller
         ];
 
         return response()->json($out);
+    }
+
+    public function getDetailsForPropertyCreations(Request $request){
+        $out = [];
+        if (!empty($request->vendors)){
+             if (!empty($this->isSuperAdmin)){
+                 $out['vendor_mode'] = 'super_admin';
+                 $out['vendors'] = User::whereIn('user_role_id', [1, 2, 3])->where('status', 1)->where('is_deleted', 0)->get();
+             }
+             elseif (!empty($this->isAdmin)){
+                 $out['vendor_mode'] = 'admin';
+                 $out['vendors'] = User::whereIn('user_role_id', [3])->where('status', 1)->where('is_deleted', 0)->get();
+             }
+             elseif (!empty($this->isVendor)){
+                 $out['vendor_mode'] = 'vendor';
+                 $out['vendors'] = $this->userUUId;
+             }
+        }
+
+        return response()->json($out);
+
+    }
+
+    public function getDetailsForPropertyEdit(Request $request){
+        $out = [];
+        if (!empty($request->vendors)){
+            if (!empty($this->isSuperAdmin)){
+                $out['vendor_mode'] = 'super_admin';
+                $out['vendors'] = User::whereIn('user_role_id', [1, 2, 3])->where('status', 1)->where('is_deleted', 0)->get();
+            }
+            elseif (!empty($this->isAdmin)){
+                $out['vendor_mode'] = 'admin';
+                $out['vendors'] = User::whereIn('user_role_id', [3])->where('status', 1)->where('is_deleted', 0)->get();
+            }
+            elseif (!empty($this->isVendor)){
+                $out['vendor_mode'] = 'vendor';
+                $out['vendors'] = $this->userUUId;
+            }
+        }
+
+        $property = [];
+        $p = Properties::where('uuid', $request->property_id)->first();
+        if (!empty($p)){
+            $locationId = $p->location_id;
+            $getLocation = Locations::where('id', $locationId)->first();
+
+            $districtId = $getLocation->district_id;
+            $getDistrict = Districts::where('id', $districtId)->first();
+
+            $provinceId = $getDistrict->province_id;
+
+            $getProvinces = Provinces::where('status', 1)->get();
+            $getDistricts = Districts::where('province_id', $provinceId)->where('status', 1)->get();
+            $getLocations = Locations::where('district_id', $districtId)->where('status', 1)->get();
+
+            $p['district_id'] = $districtId;
+            $p['province_id'] = $provinceId;
+            $p['locations'] = $getLocations;
+            $p['districts'] = $getDistricts;
+            $p['provinces'] = $getProvinces;
+            $property = $p;
+        }
+
+        $out['property'] = $property;
+
+
+        return response()->json($out);
+
     }
 }
 
