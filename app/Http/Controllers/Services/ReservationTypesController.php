@@ -39,7 +39,6 @@ class ReservationTypesController extends Controller
             ->when(empty($isIgnoreStatus), function ($query) use ($status) {
                 return $query->where('reservation_types.status', $status);
             })
-            ->where('reservation_types.status', $status)
             ->orderBy('id', 'ASC');
 
         if (!empty($mode) && $mode == 'for_select') {
