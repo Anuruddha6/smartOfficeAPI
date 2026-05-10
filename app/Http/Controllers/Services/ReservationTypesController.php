@@ -54,7 +54,7 @@ class ReservationTypesController extends Controller
     public function getReservationType(Request $request){
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
-        $reservationTypeId = !empty($request->reservation_type_Id) ? $request->reservation_type_Id : 0;
+        $reservationTypeId = !empty($request->reservation_type_id) ? $request->reservation_type_id : 0;
         $status = !empty($request->status) ? $request->status : 1;
 
 
@@ -71,7 +71,6 @@ class ReservationTypesController extends Controller
             ->when(empty($isIgnoreStatus), function ($query) use ($status) {
                 return $query->where('reservation_types.status', $status);
             })
-
             ->first();
 
         return response()->json($out);
@@ -86,8 +85,8 @@ class ReservationTypesController extends Controller
 
         ]);
 
-        if (!empty($request->reservation_type_Id)){
-            $save = ReservationTypes::where('uuid', $request->reservation_type_Id)->first();
+        if (!empty($request->reservation_type_id)){
+            $save = ReservationTypes::where('uuid', $request->reservation_type_id)->first();
         }else{
 
             $save = new ReservationTypes();
