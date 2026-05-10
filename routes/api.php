@@ -27,6 +27,8 @@ use App\Http\Controllers\Services\ProvincesController;
 use App\Http\Controllers\Services\ReservationsController;
 use App\Http\Controllers\Services\ReservationDetailsController;
 use App\Http\Controllers\Services\ReservationDetailEquipmentsController;
+use App\Http\Controllers\Services\ReservationStatusesController;
+use App\Http\Controllers\Services\ReservationTypesController;
 
 //U
 use App\Http\Controllers\Services\UsersController;
@@ -157,6 +159,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/getReservationDetailEquipments', [ReservationDetailEquipmentsController::class, 'getReservationDetailEquipments'])->name('ReservationDetailEquipments.getReservationDetailEquipments');
         Route::post('/getReservationDetailEquipment', [ReservationDetailEquipmentsController::class, 'getReservationDetailEquipment'])->name('ReservationDetailEquipments.getReservationDetailEquipment');
         Route::post('/setReservationDetailEquipment', [ReservationDetailEquipmentsController::class, 'setReservationDetailEquipment'])->name('ReservationDetailEquipments.setReservationDetailEquipment');
+    });
+
+    Route::prefix('ReservationStatuses')->group(function (){
+        Route::post('/getReservationStatuses', [ReservationStatusesController::class, 'getReservationStatuses'])->name('ReservationStatuses.getReservationStatuses');
+        Route::post('/getReservationStatus', [ReservationStatusesController::class, 'getReservationStatus'])->name('ReservationStatus.getReservationStatus');
+        Route::post('/setReservationStatus', [ReservationStatusesController::class, 'setReservationStatus'])->name('ReservationStatus.setReservationStatus');
+    });
+
+    Route::prefix('ReservationTypes')->group(function (){
+        Route::post('/getReservationTypes', [ReservationTypesController::class, 'getReservationTypes'])->name('ReservationTypes.getReservationTypes');
+        Route::post('/getReservationType', [ReservationTypesController::class, 'getReservationType'])->name('ReservationType.getReservationType');
+        Route::post('/setReservationType', [ReservationTypesController::class, 'setReservationType'])->name('ReservationType.setReservationType');
     });
 
     // U

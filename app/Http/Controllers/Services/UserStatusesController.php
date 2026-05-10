@@ -61,7 +61,6 @@ class UserStatusesController extends Controller
         )
             ->when(!empty($keyword), function ($query) use ($keyword) {
                 return $query->where('user_statuses.user_status', 'like', '%' . $keyword . '%');
-
             })
             ->when(!empty($userStatusId), function ($query) use ($userStatusId) {
                 return $query->where('user_statuses.uuid', $userStatusId);
