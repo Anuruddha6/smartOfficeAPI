@@ -101,13 +101,11 @@ class LocationsController extends Controller
             $save = Locations::where('uuid', $request->location_id)->first();
         }else{
 
-            $district = Districts::where('uuid', $request->district_id)->first();
-
             $save = new Locations();
-            $save->district_id = $district->id;
             $save->status = 1;
         }
 
+        $save->district_id = $request->district_id;
         $save->location = !empty($request->location) ? $request->location : null;
 
         $save->save();
