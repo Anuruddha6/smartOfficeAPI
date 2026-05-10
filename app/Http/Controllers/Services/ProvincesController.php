@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class ProvincesController extends Controller
 {
-    private $screen = 'province';
+    private $screen = 'provinces';
 
     public function getProvinces(Request $request){
         $out = [];

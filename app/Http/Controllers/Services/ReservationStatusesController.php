@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 
 class ReservationStatusesController extends Controller
 {
-    private $screen = 'Reservation Statuses';
+    private $screen = 'reservation_statuses';
 
     public function getReservationStatuses(Request $request){
         $out = [];
