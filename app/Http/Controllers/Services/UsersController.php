@@ -293,7 +293,8 @@ class UsersController extends Controller
         }
 
         if (!empty($request->districts)){
-            $districts = Districts::where('status', 1)->get();
+
+            $districts = Districts::where('province_id', $user->province_id)->where('status', 1)->get();
             $out['districts'] = $districts;
         }
 
