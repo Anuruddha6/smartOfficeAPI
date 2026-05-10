@@ -93,7 +93,7 @@ class ProvincesController extends Controller
             $save->status = 1;
         }
 
-        $save->location = !empty($request->location) ? $request->location : null;
+        $save->province = !empty($request->province) ? $request->province : null;
 
         $save->save();
 
@@ -106,9 +106,14 @@ class ProvincesController extends Controller
             $tProperty->save();
         }
 
-        $getProvinces = Provinces::find($save->id);
 
-        return response()->json($getProvinces);
+        $out = [
+            'status' => 'success',
+            'message_title' => 'Success!',
+            'message_text' => 'Province Has Been updated!',
+        ];
+
+        return response()->json($out);
     }
 
     public function setStatus(Request $request){
