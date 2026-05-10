@@ -4,17 +4,15 @@ namespace App\Http\Controllers\Services;
 
 use App\Helpers\CommonHelper;
 use App\Http\Controllers\Controller;
-use App\Models\Districts;
-use App\Models\Locations;
 use App\Models\ReservationStatuses;
 use App\Validator\APIValidator;
 use Illuminate\Http\Request;
 
-class ReservationStatusesController extends Controller
+class ReservationRefundTypesController extends Controller
 {
-    private $screen = 'Reservation Statuses';
+    private $screen = 'Reservation Refund Types';
 
-    public function getReservationStatuses(Request $request){
+    public function getReservationRefundTypes(Request $request){
         $out = [];
 
         $itemsPerPage = !empty($request->items_per_page) ? $request->items_per_page : $this->defaultItemsPerPage;
@@ -22,7 +20,7 @@ class ReservationStatusesController extends Controller
         $mode = !empty($request->mode) ? $request->mode : null;
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
-        $reservationStatusId = !empty($request->reservation_status_id) ? $request->reservation_status_id : 0;
+        $reservationStatusId = !empty($request->reservation_status_Id) ? $request->reservation_status_Id : 0;
         $status = !empty($request->status) ? $request->status : 1;
         $isIgnoreStatus = !empty($request->is_ignore_status) ? $request->is_ignore_status : 0;
 
@@ -52,10 +50,10 @@ class ReservationStatusesController extends Controller
         return response()->json($out);
     }
 
-    public function getReservationStatus(Request $request){
+    public function getReservationRefundType(Request $request){
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
-        $reservationStatusId = !empty($request->reservation_status_id) ? $request->reservation_status_id : 0;
+        $reservationStatusId = !empty($request->reservation_status_Id) ? $request->reservation_status_Id : 0;
         $status = !empty($request->status) ? $request->status : 1;
 
 
@@ -79,7 +77,7 @@ class ReservationStatusesController extends Controller
 
     }
 
-    public function setReservationStatus(Request $request){
+    public function setReservationRefundType(Request $request){
         $out = [];
 
         APIValidator::validate($request, [
@@ -87,8 +85,8 @@ class ReservationStatusesController extends Controller
 
         ]);
 
-        if (!empty($request->reservation_status_id)){
-            $save = ReservationStatuses::where('uuid', $request->reservation_status_id)->first();
+        if (!empty($request->reservation_status_Id)){
+            $save = ReservationStatuses::where('uuid', $request->reservation_status_Id)->first();
         }else{
 
             $save = new ReservationStatuses();
