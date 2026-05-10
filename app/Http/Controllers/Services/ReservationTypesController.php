@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 class ReservationTypesController extends Controller
 {
-    private $screen = 'Reservation Types';
+    private $screen = 'reservation_types';
 
     public function getReservationTypes(Request $request){
         $out = [];
