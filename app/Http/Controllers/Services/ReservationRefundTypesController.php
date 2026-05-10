@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Services;
 
 use App\Helpers\CommonHelper;
 use App\Http\Controllers\Controller;
-use App\Models\ReservationStatuses;
+use App\Models\ReservationRefundTypes;
 use App\Validator\APIValidator;
 use Illuminate\Http\Request;
 
 class ReservationRefundTypesController extends Controller
 {
-    private $screen = 'Reservation Refund Types';
+    private $screen = 'reservation_refund_types';
 
     public function getReservationRefundTypes(Request $request){
         $out = [];
@@ -20,25 +20,24 @@ class ReservationRefundTypesController extends Controller
         $mode = !empty($request->mode) ? $request->mode : null;
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
-        $reservationStatusId = !empty($request->reservation_status_Id) ? $request->reservation_status_Id : 0;
+        $reservationRefundTypeId = !empty($request->reservation_refund_types_id) ? $request->reservation_refund_types_id : 0;
         $status = !empty($request->status) ? $request->status : 1;
         $isIgnoreStatus = !empty($request->is_ignore_status) ? $request->is_ignore_status : 0;
 
 
-        $get = ReservationStatuses::select(
-            'reservation_statuses.*',
+        $get = ReservationRefundTypes::select(
+            'reservation_refund_types.*',
         )
 
             ->when(!empty($keyword), function ($query) use ($keyword) {
-                return $query->where('reservation_statuses.reservation_status', 'like', '%' . $keyword . '%');
+                return $query->where('reservation_refund_types.reservation_refund_type', 'like', '%' . $keyword . '%');
             })
-            ->when(!empty($reservationStatusId), function ($query) use ($reservationStatusId) {
-                return $query->where('reservation_statuses.uuid', $reservationStatusId);
+            ->when(!empty($reservationRefundTypeId), function ($query) use ($reservationRefundTypeId) {
+                return $query->where('reservation_refund_types.uuid', $reservationRefundTypeId);
             })
             ->when(empty($isIgnoreStatus), function ($query) use ($status) {
-                return $query->where('reservation_statuses.status', $status);
+                return $query->where('reservation_refund_types.status', $status);
             })
-            ->where('reservation_statuses.status', $status)
             ->orderBy('id', 'ASC');
 
         if (!empty($mode) && $mode == 'for_select') {
@@ -53,24 +52,23 @@ class ReservationRefundTypesController extends Controller
     public function getReservationRefundType(Request $request){
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
-        $reservationStatusId = !empty($request->reservation_status_Id) ? $request->reservation_status_Id : 0;
+        $reservationRefundTypeId = !empty($request->reservation_refund_types_id) ? $request->reservation_refund_types_id : 0;
         $status = !empty($request->status) ? $request->status : 1;
 
 
-        $out = ReservationStatuses::select(
-            'reservation_statuses.*',
+        $out = ReservationRefundTypes::select(
+            'reservation_refund_types.*',
         )
 
             ->when(!empty($keyword), function ($query) use ($keyword) {
-                return $query->where('reservation_statuses.reservation_status', 'like', '%' . $keyword . '%');
+                return $query->where('reservation_refund_types.reservation_refund_type', 'like', '%' . $keyword . '%');
             })
-            ->when(!empty($reservationStatusId), function ($query) use ($reservationStatusId) {
-                return $query->where('reservation_statuses.uuid', $reservationStatusId);
+            ->when(!empty($reservationRefundTypeId), function ($query) use ($reservationRefundTypeId) {
+                return $query->where('reservation_refund_types.uuid', $reservationRefundTypeId);
             })
             ->when(empty($isIgnoreStatus), function ($query) use ($status) {
-                return $query->where('reservation_statuses.status', $status);
+                return $query->where('reservation_refund_types.status', $status);
             })
-
             ->first();
 
         return response()->json($out);
@@ -81,19 +79,19 @@ class ReservationRefundTypesController extends Controller
         $out = [];
 
         APIValidator::validate($request, [
-            'reservation_status' => ['required'],
+            'reservation_refund_types' => ['required'],
 
         ]);
 
-        if (!empty($request->reservation_status_Id)){
-            $save = ReservationStatuses::where('uuid', $request->reservation_status_Id)->first();
+        if (!empty($request->reservation_refund_types_id)){
+            $save = ReservationRefundTypes::where('uuid', $request->reservation_refund_types_id)->first();
         }else{
 
-            $save = new ReservationStatuses();
+            $save = new ReservationRefundTypes();
             $save->status = 1;
         }
 
-        $save->reservation_status = !empty($request->reservation_status) ? $request->reservation_status : null;
+        $save->reservation_refund_types = !empty($request->reservation_refund_types) ? $request->reservation_refund_types : null;
 
         $save->save();
 
@@ -101,17 +99,17 @@ class ReservationRefundTypesController extends Controller
         if (empty($save->uuid)){
             $getCommon = new CommonHelper();
             $uuId = $getCommon->generateUUId($this->screen, $save->id);
-            $tProperty = ReservationStatuses::find($save->id);
+            $tProperty = ReservationRefundTypes::find($save->id);
             $tProperty->uuid = $uuId;
             $tProperty->save();
         }
 
-        $getReservationStatus = ReservationStatuses::find($save->id);
+        $getReservationRefundType = ReservationRefundTypes::find($save->id);
 
         $out = [
             'status' => 'success',
             'message_title' => 'Success!',
-            'message_text' => 'Reservation Status Has Been updated!',
+            'message_text' => 'Reservation Refund Type Has Been updated!',
         ];
 
         return response()->json($out);
@@ -119,7 +117,7 @@ class ReservationRefundTypesController extends Controller
 
     public function setStatus(Request $request){
         $out = [];
-        $save = ReservationStatuses::where('uuid', $request->id)->first();
+        $save = ReservationRefundTypes::where('uuid', $request->id)->first();
         $updatedStatus = 1;
 
         if (!empty($save->status)){
