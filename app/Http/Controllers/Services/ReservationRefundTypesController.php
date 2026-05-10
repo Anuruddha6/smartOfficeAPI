@@ -52,7 +52,7 @@ class ReservationRefundTypesController extends Controller
     public function getReservationRefundType(Request $request){
 
         $keyword = !empty($request->keyword) ? $request->keyword : '';
-        $reservationRefundTypeId = !empty($request->reservation_refund_types_id) ? $request->reservation_refund_types_id : 0;
+        $reservationRefundTypeId = !empty($request->reservation_refund_type_id) ? $request->reservation_refund_type_id : 0;
         $status = !empty($request->status) ? $request->status : 1;
 
 
@@ -79,19 +79,19 @@ class ReservationRefundTypesController extends Controller
         $out = [];
 
         APIValidator::validate($request, [
-            'reservation_refund_types' => ['required'],
+            'reservation_refund_type' => ['required'],
 
         ]);
 
-        if (!empty($request->reservation_refund_types_id)){
-            $save = ReservationRefundTypes::where('uuid', $request->reservation_refund_types_id)->first();
+        if (!empty($request->reservation_refund_type_id)){
+            $save = ReservationRefundTypes::where('uuid', $request->reservation_refund_type_id)->first();
         }else{
 
             $save = new ReservationRefundTypes();
             $save->status = 1;
         }
 
-        $save->reservation_refund_types = !empty($request->reservation_refund_types) ? $request->reservation_refund_types : null;
+        $save->reservation_refund_type = !empty($request->reservation_refund_type) ? $request->reservation_refund_type : null;
 
         $save->save();
 
@@ -103,8 +103,6 @@ class ReservationRefundTypesController extends Controller
             $tProperty->uuid = $uuId;
             $tProperty->save();
         }
-
-        $getReservationRefundType = ReservationRefundTypes::find($save->id);
 
         $out = [
             'status' => 'success',
