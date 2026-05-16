@@ -211,10 +211,15 @@ class PropertyRoomsController extends Controller
 
     public function getDetailsForPropertyRoomCreations(Request $request){
         $out = [];
-        if (!empty($request->vendors)){
+
+        if (!empty($request->properties)){
+            if (!empty($this->isAdminCategory)){
+                $out['properties'] = Properties::where('status', 1)->where('is_deleted', 0)->get();
+            }else{
+                $out['properties'] = Properties::where('user_id', $this->userId)->where('status', 1)->where('is_deleted', 0)->get();
+            }
 
         }
-
         return response()->json($out);
 
     }
