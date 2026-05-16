@@ -15,6 +15,9 @@ abstract class Controller
     public $isAdmin = 0;
     public $isVendor = 0;
     public $isUser = 0;
+    public $isAdminCategory = 0;
+
+    public $adminCategory = [1, 2];
 
     public function __construct(Request $request){
         if (!empty($request->bearerToken())){
@@ -36,6 +39,11 @@ abstract class Controller
                 }elseif ($user->user_role_id == 4){
                     $this->isUser = 1;
                 }
+
+
+                if (in_array($user->user_role_id, $this->adminCategory)){
+                    $this->isAdminCategory = 1;
+                };
             }
 
 

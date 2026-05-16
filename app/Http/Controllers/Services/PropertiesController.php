@@ -103,10 +103,14 @@ class PropertiesController extends Controller
 
         $out = Properties::select(
             'properties.*',
+            'users.first_name',
+            'users.last_name',
+            'users.email',
             'locations.location',
             'districts.district',
             'provinces.province',
         )
+            ->join('users', 'properties.user_id', 'users.id')
             ->join('locations', 'properties.location_id', 'locations.id')
             ->join('districts', 'locations.district_id', 'districts.id')
             ->join('provinces', 'districts.province_id', 'provinces.id')
@@ -147,11 +151,6 @@ class PropertiesController extends Controller
                 return $query->where('properties.is_deleted', 1);
             }, function ($query) use ($request){
                 return $query->where('properties.is_deleted', 0);
-            })
-            ->when(!empty($isVerified), function ($query) use ($isVerified) {
-                return $query->where('properties.is_verified', 1);
-            }, function ($query) use ($request){
-                return $query->where('properties.is_verified', 0);
             })
             ->first();
 

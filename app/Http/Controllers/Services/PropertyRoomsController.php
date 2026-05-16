@@ -5,6 +5,9 @@ namespace App\Http\Controllers\services;
 use App\Helpers\CommonHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Properties;
+use App\Models\PropertyRoomEquipments;
+use App\Models\PropertyRoomFeatures;
+use App\Models\PropertyRoomImages;
 use App\Models\PropertyRooms;
 use App\Validator\APIValidator;
 use Illuminate\Http\Request;
@@ -20,15 +23,19 @@ class PropertyRoomsController extends Controller
         $currentPage = !empty($request->current_page) ? $request->current_page : 0;
         $mode = !empty($request->mode) ? $request->mode : null;
 
+        $thisUserId = $this->userId;
+
         $keyword = !empty($request->keyword) ? $request->keyword : '';
         $propertyRoomId = !empty($request->property_room_id) ? $request->property_room_id : 0;
         $propertyId = !empty($request->property_id) ? $request->property_id : 0;
+        $userId = !empty($request->user_id) ? $request->user_id : 0;
         $status = !empty($request->status) ? $request->status : 1;
         $isDeleted = !empty($request->is_deleted) ? $request->is_deleted : 0;
 
 
         $get = PropertyRooms::select(
             'property_rooms.*',
+            'properties.name AS property_name',
 
         )
             ->join('properties', 'property_rooms.property_id', 'properties.id')
@@ -54,6 +61,16 @@ class PropertyRoomsController extends Controller
                     ->orWhere('property_rooms.clearence_period_hourly', 'like', '%' . $keyword . '%')
                     ->orWhere('property_rooms.description', 'like', '%' . $keyword . '%');
             })
+            ->when(!empty($userId), function ($query) use ($userId) {
+                return $query->where('properties.user_id', $userId);
+            }, function ($query) use ($thisUserId) {
+                if (empty($this->isAdminCategory)) {
+                    $query->where(function ($query) use ($thisUserId) {
+                        return $query->where('properties.user_id', $thisUserId);
+                    });
+                }
+                return $query;
+            })
             ->when(!empty($propertyRoomId), function ($query) use ($propertyRoomId) {
                 return $query->where('property_rooms.uuid', $propertyRoomId);
             })
@@ -61,9 +78,9 @@ class PropertyRoomsController extends Controller
                 return $query->where('properties.uuid', $propertyId);
             })
 
-            ->where('property_rooms.status', $status)
             ->where('properties.status', $status)
-            ->orderBy('id', 'ASC');
+            ->where('properties.is_deleted', $isDeleted)
+            ->orderBy('id', 'DESC');
 
         if (!empty($mode) && $mode == 'for_select') {
             $out = $get->get();
@@ -138,20 +155,20 @@ class PropertyRoomsController extends Controller
         if (!empty($request->property_room_id)){
             $save = PropertyRooms::where('uuid', $request->property_room_id)->first();
         }else{
-            $property = Properties::where('uuid', $request->property_id)->first();
 
             $save = new PropertyRooms();
-            $save->property_id = $property->id;
             $save->status = 1;
         }
+        $property = Properties::where('uuid', $request->property_id)->first();
 
+        $save->property_id = $property->id;
         $save->name = !empty($request->name) ? $request->name : null;
         $save->people = !empty($request->people) ? $request->people : null;
         $save->price_hour = !empty($request->price_hour) ? $request->price_hour : null;
         $save->price_half_day = !empty($request->price_half_day) ? $request->price_half_day : null;
         $save->price_day = !empty($request->price_day) ? $request->price_day : null;
-        $save->clearence_period_halfday = !empty($request->clearence_period_halfday) ? $request->clearence_period_halfday : null;
-        $save->clearence_period_hourly = !empty($request->clearence_period_hourly) ? $request->clearence_period_hourly : null;
+        $save->clearence_period_halfday = !empty($request->clearence_period_halfday) ? date('H:i:s', strtotime($request->clearence_period_halfday)) : null;
+        $save->clearence_period_hourly = !empty($request->clearence_period_hourly) ? date('H:i:s', strtotime($request->clearence_period_hourly)) : null;
         $save->description = !empty($request->description) ? $request->description : null;
 
         $save->save();
@@ -190,5 +207,39 @@ class PropertyRoomsController extends Controller
         ];
 
         return response()->json($out);
+    }
+
+    public function getDetailsForPropertyRoomCreations(Request $request){
+        $out = [];
+        if (!empty($request->vendors)){
+
+        }
+
+        return response()->json($out);
+
+    }
+
+    public function getDetailsForPropertyRoomEdit(Request $request){
+        $out = [];
+
+        $room = [];
+        $p = PropertyRooms::select('property_rooms.*', 'properties.user_id')
+            ->join('properties', 'properties.id', 'property_rooms.property_id')
+            ->where('property_rooms.uuid', $request->property_room_id)
+            ->where('properties.status', 1)
+            ->where('properties.is_deleted', 0)
+            ->first();
+        if (!empty($p)){
+            if (!empty($request->properties)){
+                $out['properties'] = Properties::where('user_id', $p->user_id)->where('status', 1)->where('is_deleted', 0)->get();
+            }
+            $room = $p;
+        }
+
+        $out['room'] = $room;
+
+
+        return response()->json($out);
+
     }
 }

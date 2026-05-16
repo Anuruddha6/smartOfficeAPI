@@ -41,6 +41,7 @@ use App\Http\Controllers\Services\VendorPaymentsController;
 
 Route::post('/Users/setUser', [UsersController::class, 'setUser'])->name('setUser');
 Route::post('/Users/loginUser', [UsersController::class, 'loginUser'])->name('loginUser');
+Route::post('/Users/test', [UsersController::class, 'test'])->name('test');
 
 // A
 Route::prefix('ApplicationSettings')->group(function (){
@@ -119,6 +120,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('PropertyRooms')->group(function (){
         Route::post('/setPropertyRoom', [PropertyRoomsController::class, 'setPropertyRoom'])->name('propertyRooms.setPropertyRoom');
         Route::post('/setStatus', [PropertyRoomsController::class, 'setStatus'])->name('propertyRooms.setStatus');
+        Route::post('/getDetailsForPropertyRoomCreations', [PropertyRoomsController::class, 'getDetailsForPropertyRoomCreations'])->name('propertyRooms.getDetailsForPropertyRoomCreations');
+        Route::post('/getDetailsForPropertyRoomEdit', [PropertyRoomsController::class, 'getDetailsForPropertyRoomEdit'])->name('propertyRooms.getDetailsForPropertyRoomEdit');
     });
 
 

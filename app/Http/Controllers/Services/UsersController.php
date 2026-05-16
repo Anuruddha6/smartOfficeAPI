@@ -324,4 +324,19 @@ class UsersController extends Controller
         return response()->json($out);
     }
 
+
+    public function test(Request $request)
+    {
+        $getUser = User::find(1);
+        $url = url('/user/verify-email/' . $getUser->uuid);
+        $mailData = [
+            'email_subject' => 'Thank you for registering with Smart Office.',
+            'url' => $url,
+        ];
+
+        $send = Mail::to('work.cralwis@gmail.com')->send(new WelcomeMail($mailData));
+
+        return response()->json($send);
+    }
+
 }
