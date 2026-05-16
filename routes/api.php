@@ -122,6 +122,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/setStatus', [PropertyRoomsController::class, 'setStatus'])->name('propertyRooms.setStatus');
         Route::post('/getDetailsForPropertyRoomCreations', [PropertyRoomsController::class, 'getDetailsForPropertyRoomCreations'])->name('propertyRooms.getDetailsForPropertyRoomCreations');
         Route::post('/getDetailsForPropertyRoomEdit', [PropertyRoomsController::class, 'getDetailsForPropertyRoomEdit'])->name('propertyRooms.getDetailsForPropertyRoomEdit');
+        Route::post('/getPropertyRoomImages', [PropertyRoomsController::class, 'getPropertyRoomImages'])->name('propertyRooms.getPropertyRoomImages');
+        Route::post('/setPropertyRoomImage', [PropertyRoomsController::class, 'setPropertyRoomImage'])->name('propertyRooms.setPropertyRoomImage');
+        Route::post('/deletePropertyRoomImage', [PropertyRoomsController::class, 'deletePropertyRoomImage'])->name('propertyRooms.deletePropertyRoomImage');
+        Route::post('/setPrimaryImage', [PropertyRoomsController::class, 'setPrimaryImage'])->name('propertyRooms.setPrimaryImage');
+
     });
 
 

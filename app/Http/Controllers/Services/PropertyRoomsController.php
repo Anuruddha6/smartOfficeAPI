@@ -242,4 +242,91 @@ class PropertyRoomsController extends Controller
         return response()->json($out);
 
     }
+
+    public function getPropertyRoomImages(Request $request)
+    {
+        $out = [];
+        if (!empty($request->property_room_id)){
+            $propertyRoom = PropertyRooms::where('uuid', $request->property_room_id)->first();
+            $out = PropertyRoomImages::where('property_room_id', $propertyRoom->id)->orderBy('is_primary', 'DESC')->get();
+        }
+
+        return response()->json($out);
+    }
+
+    public function setPropertyRoomImage(Request $request)
+    {
+        $out = [];
+        if (!empty($request->property_room_id)){
+            $propertyRoom = PropertyRooms::where('uuid', $request->property_room_id)->first();
+            $propertyRoomId = $propertyRoom->id;
+
+            $isPrimary = 0;
+            $pc = PropertyRoomImages::where('property_room_id', $propertyRoomId)->count();
+            if (empty($pc)){
+                $isPrimary = 1;
+            }
+
+            $getCommon = new CommonHelper();
+            $uuId = $getCommon->generateUUId($this->screen, 0);
+
+            $set = new PropertyRoomImages();
+            $set->uuid = $uuId;
+            $set->property_room_id = $propertyRoomId;
+            $set->image = !empty($request->image) ? $request->image : null;
+            $set->is_primary = $isPrimary;
+            $set->status = 1;
+            $set->save();
+
+
+
+            $out['image'] = $set;
+            $out['status'] = 'success';
+            $out['message_title'] = 'Success!';
+            $out['message_text'] = 'New Property Image Added!';
+        }
+
+        return response()->json($out);
+    }
+
+    public function deletePropertyRoomImage(Request $request)
+    {
+        $out = [];
+        if (!empty($request->property_room_image_id)){
+            PropertyRoomImages::where('uuid', $request->property_room_image_id)->delete();
+
+            $out['status'] = 'success';
+            $out['message_title'] = 'Success!';
+            $out['message_text'] = 'Property Image Deleted!';
+        }
+
+        return response()->json($out);
+    }
+
+    public function setPrimaryImage(Request $request)
+    {
+        $out = [];
+        if (!empty($request->property_room_image_id)){
+            $getImage = PropertyRoomImages::where('uuid', $request->property_room_image_id)->first();
+            if (!empty($getImage)){
+                $propertyRoomId = $getImage->property_room_id;
+                $getImages = PropertyRoomImages::where('property_room_id', $propertyRoomId)->get();
+                foreach ($getImages as $getImage){
+                    $imgId = $getImage->id;
+                    $u = PropertyRoomImages::find($imgId);
+                    $u->is_primary = 0;
+                    $u->save();
+                }
+
+                $getImage->is_primary = 1;
+                $getImage->save();
+            }
+
+            $out['status'] = 'success';
+            $out['message_title'] = 'Success!';
+            $out['message_text'] = 'Primary image has been changed!';
+        }
+
+        return response()->json($out);
+    }
 }
