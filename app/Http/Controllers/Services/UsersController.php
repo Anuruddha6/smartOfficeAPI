@@ -235,7 +235,7 @@ class UsersController extends Controller
                 $out = [
                     'status' => 'success',
                     'message' => '',
-                    'id' => $user->ref_id,
+                    'id' => $user->uuid,
                     'user_role_id' => $user->user_role_id,
                     'first_name' => $user->first_name,
                     'last_name' => $user->last_name,
