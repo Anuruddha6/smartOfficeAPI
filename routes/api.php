@@ -133,11 +133,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('PropertyRoomEquipments')->group(function (){
         Route::post('/setPropertyRoomEquipment', [PropertyRoomEquipmentsController::class, 'setPropertyRoomEquipment'])->name('propertyRoomEquipments.setPropertyRoomEquipment');
         Route::post('/setStatus', [PropertyRoomEquipmentsController::class, 'setStatus'])->name('propertyRoomEquipments.setStatus');
+        Route::post('/delete', [PropertyRoomEquipmentsController::class, 'delete'])->name('propertyRoomEquipments.delete');
     });
 
     Route::prefix('PropertyRoomFeatures')->group(function (){
         Route::post('/setPropertyRoomFeature', [PropertyRoomFeaturesController::class, 'setPropertyRoomFeature'])->name('propertyRoomFeatures.setPropertyRoomFeature');
         Route::post('/setStatus', [PropertyRoomFeaturesController::class, 'setStatus'])->name('propertyRoomFeatures.setStatus');
+        Route::post('/delete', [PropertyRoomFeaturesController::class, 'delete'])->name('propertyRoomFeatures.delete');
     });
 
     Route::prefix('PaymentMethods')->group(function (){

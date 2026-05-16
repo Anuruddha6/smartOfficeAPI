@@ -117,7 +117,7 @@ class PropertyRoomEquipmentsController extends Controller
         $save->equipment = !empty($request->equipment) ? $request->equipment : null;
         $save->price = !empty($request->price) ? $request->price : null;
         $save->description = !empty($request->description) ? $request->description : null;
-        $save->is_chargable = !empty($request->is_chargable) ? $request->is_chargable : null;
+        $save->is_chargable = !empty($request->is_chargable) ? 1 : 0;
         $save->quantity = !empty($request->quantity) ? $request->quantity : null;
 
         $save->save();
@@ -154,6 +154,19 @@ class PropertyRoomEquipmentsController extends Controller
             'message_title' => 'Success!',
             'message_text' => 'Status Has Been Changed!',
         ];
+
+        return response()->json($out);
+    }
+
+    public function delete(Request $request){
+        $out = [];
+        if (!empty($request->property_room_equipment_id)){
+            PropertyRoomEquipments::where('uuid', $request->property_room_equipment_id)->delete();
+
+            $out['status'] = 'success';
+            $out['message_title'] = 'Success!';
+            $out['message_text'] = 'Equipment has been Deleted!';
+        }
 
         return response()->json($out);
     }

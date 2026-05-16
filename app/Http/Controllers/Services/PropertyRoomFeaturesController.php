@@ -148,4 +148,17 @@ class PropertyRoomFeaturesController extends Controller
 
         return response()->json($out);
     }
+
+    public function delete(Request $request){
+        $out = [];
+        if (!empty($request->property_room_feature_id)){
+            PropertyRoomFeatures::where('uuid', $request->property_room_feature_id)->delete();
+
+            $out['status'] = 'success';
+            $out['message_title'] = 'Success!';
+            $out['message_text'] = 'Feature has been Deleted!';
+        }
+
+        return response()->json($out);
+    }
 }
