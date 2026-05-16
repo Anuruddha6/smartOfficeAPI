@@ -13,9 +13,8 @@ class UsersHelper
         if (!empty($publicKey)){
             $out = User::select(
                 'users.*',
-
             )
-                ->join('user_roles', 'users.user_role_id', 'users.id')
+                ->join('user_roles', 'users.user_role_id', 'user_roles.id')
                 ->when(!empty($publicKey), function ($query) use ($publicKey) {
                     return $query->where('users.public_key', $publicKey);
                 })
