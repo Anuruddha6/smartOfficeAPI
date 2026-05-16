@@ -129,6 +129,13 @@ class PropertiesController extends Controller
                                 'property_room_features.*',
                             )->where('property_room_features.status', 1);
                         }
+                        ,
+                        'property_room_images' => function ($query) {
+                            $query->select(
+                                'property_room_images.*',
+                            )->where('property_room_images.status', 1)
+                            ->orderBy('property_room_images.is_primary', 'DESC');
+                        }
                     ])->where('property_rooms.status', 1);
                 }
             ])

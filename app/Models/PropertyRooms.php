@@ -22,4 +22,9 @@ class PropertyRooms extends Model
     {
         return $this->hasMany(PropertyRoomFeatures::class, 'property_room_id', 'id');
     }
+
+    public function property_room_images()
+    {
+        return $this->hasMany(PropertyRoomImages::class, 'property_room_id', 'id');
+    }
 }
