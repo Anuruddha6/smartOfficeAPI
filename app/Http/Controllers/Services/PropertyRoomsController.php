@@ -36,9 +36,10 @@ class PropertyRoomsController extends Controller
         $get = PropertyRooms::select(
             'property_rooms.*',
             'properties.name AS property_name',
-
+            'property_room_images.image AS property_room_primary_image'
         )
             ->join('properties', 'property_rooms.property_id', 'properties.id')
+            ->leftJoin('property_room_images', 'property_rooms.id', 'property_room_images.property_room_id')
             ->with([
                 'property_room_equipments' => function ($query) {
                     $query->select(
@@ -77,7 +78,7 @@ class PropertyRoomsController extends Controller
             ->when(!empty($propertyId), function ($query) use ($propertyId) {
                 return $query->where('properties.uuid', $propertyId);
             })
-
+            ->where('property_room_images.is_primary', $status)
             ->where('properties.status', $status)
             ->where('properties.is_deleted', $isDeleted)
             ->orderBy('id', 'DESC');
@@ -358,11 +359,13 @@ class PropertyRoomsController extends Controller
             'locations.location',
             'districts.district',
             'provinces.province',
+            'property_room_images.image AS property_room_primary_image'
         )
             ->join('properties', 'property_rooms.property_id', 'properties.id')
             ->join('locations', 'properties.location_id', 'locations.id')
             ->join('districts', 'locations.district_id', 'districts.id')
             ->join('provinces', 'districts.province_id', 'provinces.id')
+            ->leftJoin('property_room_images', 'property_rooms.id', 'property_room_images.property_room_id')
             ->with([
                 'property_room_equipments' => function ($query) {
                     $query->select(
@@ -402,6 +405,7 @@ class PropertyRoomsController extends Controller
                 return $query->where('properties.uuid', $propertyId);
             })
 
+            ->where('property_room_images.is_primary', $status)
             ->where('properties.is_verified', $status)
             ->where('properties.status', $status)
             ->where('properties.is_deleted', $isDeleted)
