@@ -4,11 +4,14 @@ namespace App\Http\Controllers\services;
 
 use App\Helpers\CommonHelper;
 use App\Http\Controllers\Controller;
+use App\Models\Districts;
+use App\Models\Locations;
 use App\Models\Properties;
 use App\Models\PropertyRoomEquipments;
 use App\Models\PropertyRoomFeatures;
 use App\Models\PropertyRoomImages;
 use App\Models\PropertyRooms;
+use App\Models\Provinces;
 use App\Validator\APIValidator;
 use Illuminate\Http\Request;
 
@@ -352,6 +355,10 @@ class PropertyRoomsController extends Controller
         $status = !empty($request->status) ? $request->status : 1;
         $isDeleted = 0;
 
+        $provinceId = !empty($request->province_id) ? $request->province_id : 0;
+        $districtId = !empty($request->district_id) ? $request->district_id : 0;
+        $locationId = !empty($request->location_id) ? $request->location_id : 0;
+        $people = !empty($request->people) ? $request->people : 0;
 
         $out = PropertyRooms::select(
             'property_rooms.*',
@@ -404,7 +411,18 @@ class PropertyRoomsController extends Controller
             ->when(!empty($propertyId), function ($query) use ($propertyId) {
                 return $query->where('properties.uuid', $propertyId);
             })
-
+            ->when(!empty($provinceId), function ($query) use ($provinceId) {
+                return $query->where('provinces.uuid', $provinceId);
+            })
+            ->when(!empty($districtId), function ($query) use ($districtId) {
+                return $query->where('districts.uuid', $districtId);
+            })
+            ->when(!empty($locationId), function ($query) use ($locationId) {
+                return $query->where('locations.uuid', $locationId);
+            })
+            ->when(!empty($people), function ($query) use ($people) {
+                return $query->where('property_rooms.people', '>=', $people);
+            })
             ->where('property_room_images.is_primary', $status)
             ->where('properties.is_verified', $status)
             ->where('properties.status', $status)
