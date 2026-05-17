@@ -395,16 +395,6 @@ class PropertyRoomsController extends Controller
                     ->orWhere('property_rooms.clearence_period_hourly', 'like', '%' . $keyword . '%')
                     ->orWhere('property_rooms.description', 'like', '%' . $keyword . '%');
             })
-            ->when(!empty($userId), function ($query) use ($userId) {
-                return $query->where('properties.user_id', $userId);
-            }, function ($query) use ($thisUserId) {
-                if (empty($this->isAdminCategory)) {
-                    $query->where(function ($query) use ($thisUserId) {
-                        return $query->where('properties.user_id', $thisUserId);
-                    });
-                }
-                return $query;
-            })
             ->when(!empty($propertyRoomId), function ($query) use ($propertyRoomId) {
                 return $query->where('property_rooms.uuid', $propertyRoomId);
             })
