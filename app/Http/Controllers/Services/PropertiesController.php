@@ -306,6 +306,26 @@ class PropertiesController extends Controller
         return response()->json($out);
 
     }
+
+    public function setVerify(Request $request){
+
+        $save = Properties::where('uuid', $request->property_id)->first();
+
+        if (!empty($save)){
+            $save->is_verified = 1;
+            $save->verified_by = $this->userId;
+            $save->verified_at = $this->dbInsertTime();
+            $save->save();
+        }
+
+        $out = [
+            'status' => 'success',
+            'message_title' => 'Success!',
+            'message_text' => 'Property Has Been Verified!',
+        ];
+
+        return response()->json($out);
+    }
 }
 
 

@@ -116,6 +116,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/setStatus', [PropertiesController::class, 'setStatus'])->name('properties.setStatus');
         Route::post('/getDetailsForPropertyCreations', [PropertiesController::class, 'getDetailsForPropertyCreations'])->name('properties.getDetailsForPropertyCreations');
         Route::post('/getDetailsForPropertyEdit', [PropertiesController::class, 'getDetailsForPropertyEdit'])->name('properties.getDetailsForPropertyEdit');
+        Route::post('/setVerify', [PropertiesController::class, 'setVerify'])->name('properties.setVerify');
     });
 
     Route::prefix('PropertyRooms')->group(function (){
