@@ -1,6 +1,9 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/idealmar/public_html/smartofficeapi.idealmart.lk/
+    - export DEPLOYPATH=/home/sevnlk/smartofficeapi.sevn.lk/
     - /bin/cp -R app $DEPLOYPATH
+    - /bin/cp -R bootstrap $DEPLOYPATH
+    - /bin/cp -R public $DEPLOYPATH
+    - /bin/cp -R resources $DEPLOYPATH
     - /bin/cp -R routes $DEPLOYPATH
