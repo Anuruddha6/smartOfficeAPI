@@ -70,6 +70,7 @@ Route::prefix('Properties')->group(function (){
 
 Route::prefix('PropertyRooms')->group(function (){
     Route::post('/getPropertyRooms', [PropertyRoomsController::class, 'getPropertyRooms'])->name('propertyRooms.getPropertyRooms');
+    Route::post('/getPropertyRoomsForHomepage', [PropertyRoomsController::class, 'getPropertyRoomsForHomepage'])->name('propertyRooms.getPropertyRoomsForHomepage');
     Route::post('/getPropertyRoom', [PropertyRoomsController::class, 'getPropertyRoom'])->name('propertyRooms.getPropertyRoom');
 });
 

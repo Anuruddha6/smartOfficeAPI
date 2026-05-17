@@ -334,4 +334,80 @@ class PropertyRoomsController extends Controller
 
         return response()->json($out);
     }
+
+    public function getPropertyRoomsForHomepage(Request $request){
+        $out = [];
+
+        $itemsPerPage = !empty($request->items_per_page) ? $request->items_per_page : $this->defaultItemsPerPage;
+        $currentPage = !empty($request->current_page) ? $request->current_page : 0;
+        $mode = !empty($request->mode) ? $request->mode : null;
+
+        $thisUserId = $this->userId;
+
+        $keyword = !empty($request->keyword) ? $request->keyword : '';
+        $propertyRoomId = !empty($request->property_room_id) ? $request->property_room_id : 0;
+        $propertyId = !empty($request->property_id) ? $request->property_id : 0;
+        $userId = !empty($request->user_id) ? $request->user_id : 0;
+        $status = !empty($request->status) ? $request->status : 1;
+        $isDeleted = 0;
+
+
+        $out = PropertyRooms::select(
+            'property_rooms.*',
+            'properties.name AS property_name',
+            'locations.location',
+            'districts.district',
+            'provinces.province',
+        )
+            ->join('properties', 'property_rooms.property_id', 'properties.id')
+            ->join('locations', 'properties.location_id', 'locations.id')
+            ->join('districts', 'locations.district_id', 'districts.id')
+            ->join('provinces', 'districts.province_id', 'provinces.id')
+            ->with([
+                'property_room_equipments' => function ($query) {
+                    $query->select(
+                        'property_room_equipments.*',
+                    )->where('property_room_equipments.status', 1);
+                },
+                'property_room_features' => function ($query) {
+                    $query->select(
+                        'property_room_features.*',
+                    )->where('property_room_features.status', 1);
+                }
+            ])
+            ->when(!empty($keyword), function ($query) use ($keyword) {
+                return $query->where('property_rooms.name', 'like', '%' . $keyword . '%')
+                    ->orWhere('property_rooms.people', 'like', '%' . $keyword . '%')
+                    ->orWhere('property_rooms.price_hour', 'like', '%' . $keyword . '%')
+                    ->orWhere('property_rooms.price_half_day', 'like', '%' . $keyword . '%')
+                    ->orWhere('property_rooms.price_day', 'like', '%' . $keyword . '%')
+                    ->orWhere('property_rooms.clearence_period_halfday', 'like', '%' . $keyword . '%')
+                    ->orWhere('property_rooms.clearence_period_hourly', 'like', '%' . $keyword . '%')
+                    ->orWhere('property_rooms.description', 'like', '%' . $keyword . '%');
+            })
+            ->when(!empty($userId), function ($query) use ($userId) {
+                return $query->where('properties.user_id', $userId);
+            }, function ($query) use ($thisUserId) {
+                if (empty($this->isAdminCategory)) {
+                    $query->where(function ($query) use ($thisUserId) {
+                        return $query->where('properties.user_id', $thisUserId);
+                    });
+                }
+                return $query;
+            })
+            ->when(!empty($propertyRoomId), function ($query) use ($propertyRoomId) {
+                return $query->where('property_rooms.uuid', $propertyRoomId);
+            })
+            ->when(!empty($propertyId), function ($query) use ($propertyId) {
+                return $query->where('properties.uuid', $propertyId);
+            })
+
+            ->where('properties.is_verified', $status)
+            ->where('properties.status', $status)
+            ->where('properties.is_deleted', $isDeleted)
+            ->orderBy('id', 'DESC')
+            ->paginate($itemsPerPage, ['*'], 'page', $currentPage);
+
+        return response()->json($out);
+    }
 }
