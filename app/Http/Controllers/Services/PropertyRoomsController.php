@@ -120,6 +120,12 @@ class PropertyRoomsController extends Controller
                     $query->select(
                         'property_room_features.*',
                     )->where('property_room_features.status', 1);
+                },
+                'property_room_images' => function ($query) {
+                    $query->select(
+                        'property_room_images.*',
+                    )->where('property_room_images.status', 1)
+                    ->orderBy('is_primary', 'DESC');
                 }
             ])
             ->when(!empty($keyword), function ($query) use ($keyword) {
