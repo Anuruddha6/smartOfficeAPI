@@ -41,7 +41,10 @@ use App\Http\Controllers\Services\VendorPaymentsController;
 
 Route::post('/Users/setUser', [UsersController::class, 'setUser'])->name('setUser');
 Route::post('/Users/loginUser', [UsersController::class, 'loginUser'])->name('loginUser');
+Route::post('/Users/sendForgotPasswordEmail', [UsersController::class, 'sendForgotPasswordEmail'])->name('sendForgotPasswordEmail');
+Route::post('/Users/resetPassword', [UsersController::class, 'resetPassword'])->name('resetPassword');
 Route::post('/Users/test', [UsersController::class, 'test'])->name('test');
+
 
 // A
 Route::prefix('ApplicationSettings')->group(function (){
@@ -87,6 +90,11 @@ Route::prefix('PropertyRoomFeatures')->group(function (){
 Route::prefix('Provinces')->group(function (){
     Route::post('/getProvinces', [ProvincesController::class, 'getProvinces'])->name('Provinces.getProvinces');
     Route::post('/getProvince', [ProvincesController::class, 'getProvince'])->name('Provinces.getProvince');
+});
+
+Route::prefix('Users')->group(function (){
+    Route::post('/getUser', [UsersController::class, 'getUser'])->name('users.getUser');
+    Route::post('/verifyUser', [UsersController::class, 'verifyUser'])->name('users.verifyUser');
 });
 
 
@@ -200,11 +208,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // U
     Route::prefix('Users')->group(function (){
         Route::post('/getUsers', [UsersController::class, 'getUsers'])->name('users.getUsers');
-        Route::post('/getUser', [UsersController::class, 'getUser'])->name('users.getUser');
         Route::post('/getDetailsForUserCreations', [UsersController::class, 'getDetailsForUserCreations'])->name('users.getDetailsForUserCreations');
         Route::post('/getDetailsForUserEdit', [UsersController::class, 'getDetailsForUserEdit'])->name('users.getDetailsForUserEdit');
         Route::post('/setStatus', [UsersController::class, 'setStatus'])->name('users.setStatus');
-
+        Route::post('/resendUserVerifyEmail', [UsersController::class, 'resendUserVerifyEmail'])->name('users.resendUserVerifyEmail');
     });
 
 

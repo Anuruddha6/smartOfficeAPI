@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Services;
 use App\Helpers\CommonHelper;
 use App\Helpers\DBHelper;
 use App\Http\Controllers\Controller;
+use App\Mail\ResetPasswordMail;
 use App\Mail\WelcomeMail;
 use App\Models\Districts;
 use App\Models\Provinces;
@@ -12,6 +13,7 @@ use App\Models\User;
 use App\Models\UserRoles;
 use App\Validator\APIValidator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -200,7 +202,10 @@ class UsersController extends Controller
         $getUser = User::find($user->id);
 
         if (!empty($isNewUser)){
-            $url = url('/user/verify-email/' . $getUser->uuid);
+
+            $c = new CommonHelper();
+            $url = $c->getAppUrl('user/verify-email/' . $getUser->uuid);
+
             $mailData = [
                 'email_subject' => 'Thank you for registering with Smart Office.',
                 'url' => $url,
@@ -232,6 +237,9 @@ class UsersController extends Controller
                 ];
             }
             else{
+
+                $isVerified = !empty($user->email_verified_at) ? 1 : 0;
+
                 $out = [
                     'status' => 'success',
                     'message' => '',
@@ -240,6 +248,7 @@ class UsersController extends Controller
                     'first_name' => $user->first_name,
                     'last_name' => $user->last_name,
                     'email' => $user->email,
+                    'is_verified' => $isVerified,
                     'token' => $user->public_key,
                 ];
             }
@@ -319,6 +328,99 @@ class UsersController extends Controller
             'status' => 'success',
             'message_title' => 'Success!',
             'message_text' => 'Status Has Been Changed!',
+        ];
+
+        return response()->json($out);
+    }
+
+    public function verifyUser(Request $request){
+        $out = [];
+        $save = User::where('uuid', $request->user_id)->first();
+        if (!empty($save)){
+            $save->email_verified_at = Carbon::now();
+            $save->save();
+        }
+
+        $out = [
+            'status' => 'success',
+            'message_title' => 'Success!',
+            'message_text' => 'User Has Been Verified!',
+        ];
+
+        return response()->json($out);
+    }
+
+
+    public function resendUserVerifyEmail(Request $request)
+    {
+        $getUser = User::where('uuid', $request->user_id)->first();
+
+        $c = new CommonHelper();
+        $url = $c->getAppUrl('user/verify-email/' . $getUser->uuid);
+
+        $mailData = [
+            'email_subject' => 'Thank you for registering with Smart Office.',
+            'url' => $url,
+        ];
+
+        $send = Mail::to($getUser->email)->send(new WelcomeMail($mailData));
+
+        $out = [
+            'status' => 'success',
+            'message_title' => 'Success!',
+            'message_text' => 'User Verification email has been Been sent!',
+        ];
+        return response()->json($out);
+    }
+
+
+    public function sendForgotPasswordEmail(Request $request)
+    {
+        $getUser = User::where('email', $request->email)->first();
+
+        if (!empty($getUser)){
+            $c = new CommonHelper();
+            $url = $c->getAppUrl('user/reset-password/' . $getUser->uuid);
+
+            $mailData = [
+                'email_subject' => 'Smart Office Reset Password.',
+                'url' => $url,
+            ];
+
+            $send = Mail::to($getUser->email)->send(new ResetPasswordMail($mailData));
+
+            $out = [
+                'status' => 'success',
+                'message_title' => 'Success!',
+                'message_text' => 'User Verification email has been Been sent to your email address!',
+            ];
+        }
+        else{
+            $out = [
+                'status' => 'error',
+                'message_title' => 'Error!',
+                'message_text' => 'Invalid Email Address!',
+            ];
+        }
+
+
+        return response()->json($out);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        APIValidator::validate($request, [
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        $getUser = User::where('uuid', $request->user_id)->first();
+        $getUser->password = Hash::make($request->password);
+        $getUser->save();
+
+        $out = [
+            'status' => 'success',
+            'message_title' => 'Done!',
+            'message_text' => 'Password Has Been Changed!',
         ];
 
         return response()->json($out);

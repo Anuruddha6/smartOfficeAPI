@@ -10,6 +10,19 @@ use Illuminate\Support\Facades\DB;
 class CommonHelper
 {
 
+    public function getAppUrl($params = null)
+    {
+        $url = env('APP_URL');
+        if (!empty($params)) {
+            $url = str_ends_with($url, '/') ? $url : $url . '/';
+            $params = str_starts_with($params, '/') ? substr($params, 1) : $params;
+
+            $url .= $params;
+        }
+        return $url;
+
+    }
+
     public function generateUUId($res = [])
     {
         if (!empty($res)){
