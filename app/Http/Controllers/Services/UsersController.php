@@ -118,6 +118,18 @@ class UsersController extends Controller
             })
             ->first();
 
+        if (!empty($request->get_districts)){
+            $districts = Districts::select(
+                'districts.*',
+                'provinces.province',
+            )
+                ->join('provinces', 'districts.province_id', 'provinces.id')
+                ->where('provinces.status', 1)
+                ->orderBy('id', 'ASC')
+                ->get();
+            $out['districts'] = $districts;
+        }
+
         return response()->json($out);
     }
 
@@ -153,6 +165,8 @@ class UsersController extends Controller
             $user->is_deleted = 0;
             $user->status = 1;
             $user->email = $request->email;
+            $user->user_role_id  = !empty($request->user_role_id) ? $request->user_role_id : 4;
+            $user->image = !empty($request->image) ? $request->image : 'user.jpg';
         }
 
 
@@ -169,7 +183,6 @@ class UsersController extends Controller
 
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
-        $user->user_role_id  = !empty($request->user_role_id) ? $request->user_role_id : 4;
         $user->phone_1  = !empty($request->phone_1) ? $request->phone_1 : null;
         $user->phone_2  = !empty($request->phone_2) ? $request->phone_2 : null;
         $user->street_address  = !empty($request->street_address) ? $request->street_address : null;
@@ -178,7 +191,15 @@ class UsersController extends Controller
         $user->city  = !empty($request->city) ? $request->city : null;
         $user->province_id  = $provinceId;
         $user->district_id  = $districtId;
-        $user->image  = !empty($request->image) ? $request->image : "user.png";
+
+        if (empty($isNewUser)){
+            if (!empty($request->user_role_id)){
+                $user->user_role_id  = $request->user_role_id;
+            }
+            if (!empty($request->image)){
+                $user->image  = $request->image;
+            }
+        }
 
         $user->save();
 
